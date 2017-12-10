@@ -1,0 +1,1 @@
+# browser_snapshots_extension
