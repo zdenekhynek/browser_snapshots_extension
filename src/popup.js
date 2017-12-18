@@ -1,3 +1,7 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Popup from './popup/index.jsx';
+
 // Copyright (c) 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -128,36 +132,41 @@ const agent = 0;
 let session;
 
 document.addEventListener('DOMContentLoaded', () => {
-  const startBtn = document.getElementById('startBtn');
-  const stopBtn = document.getElementById('stopBtn');
-  const saveBtn = document.getElementById('saveBtn');
+   ReactDOM.render(
+    <Popup />,
+    document.getElementById('root')
+  );
 
-  let intervalId;
+  // const startBtn = document.getElementById('startBtn');
+  // const stopBtn = document.getElementById('stopBtn');
+  // const saveBtn = document.getElementById('saveBtn');
 
-  saveBtn.addEventListener('click', () => {
-    makeSnapshot();
-  });
-  startBtn.addEventListener('click', () => {
-    stopBtn.disabled = false;
-    startBtn.disabled = true;
+  // let intervalId;
 
-    //  hardcode agent id 0
-    startSession(agent).then((data) => {
-      console.log('data', data);
-      //  get newly created session id
-      session = data.id;
-      makeSnapshot(agent, session);
+  // saveBtn.addEventListener('click', () => {
+  //   makeSnapshot();
+  // });
+  // startBtn.addEventListener('click', () => {
+  //   stopBtn.disabled = false;
+  //   startBtn.disabled = true;
 
-      intervalId = setInterval(() => {
-        makeSnapshot(agent, session);
-      }, 1000 * 60);
-    });
-  });
-  stopBtn.addEventListener('click', () => {
-    clearInterval(intervalId);
-    stopSession(session, agent, getDate());
+  //   //  hardcode agent id 0
+  //   startSession(agent).then((data) => {
+  //     console.log('data', data);
+  //     //  get newly created session id
+  //     session = data.id;
+  //     makeSnapshot(agent, session);
 
-    stopBtn.disabled = true;
-    startBtn.disabled = false;
-  });
+  //     intervalId = setInterval(() => {
+  //       makeSnapshot(agent, session);
+  //     }, 1000 * 60);
+  //   });
+  // });
+  // stopBtn.addEventListener('click', () => {
+  //   clearInterval(intervalId);
+  //   stopSession(session, agent, getDate());
+
+  //   stopBtn.disabled = true;
+  //   startBtn.disabled = false;
+  // });
 });

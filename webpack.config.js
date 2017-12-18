@@ -20,7 +20,7 @@ module.exports = {
     rules: [
       // We use Babel to transpile JSX
       {
-        test: /\.js$/,
+        test: /\.jsx?$/,
         include: [
           path.resolve(__dirname, './src')
         ],
