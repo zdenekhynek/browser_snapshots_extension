@@ -1,12 +1,22 @@
 import { List, Map } from 'immutable';
+import Cookies from 'js-cookie';
 
 import { RECEIVE_LOGIN } from './action_creators';
 
+export const COOKIE_NAME = 'browser-snapshot-auth-token';
+
+export function getStoredToken() {
+  return Cookies.get(COOKIE_NAME);
+}
+
 export function getInitialState() {
-  return Map({
-    isAuthorized: false,
-    token: '',
-  });
+  //  do we have stored token in cookie?
+  const token = getStoredToken();
+  const isAuthorized = !!token;
+
+  console.log('token', token, isAuthorized);
+
+  return Map({ isAuthorized, token });
 }
 
 export function reduceLoginResp(state, resp) {
@@ -22,7 +32,6 @@ export function reduceLoginResp(state, resp) {
 }
 
 export default function(state = getInitialState(), action) {
-  console.log('action', action)
   switch(action.type) {
     case RECEIVE_LOGIN:
       return reduceLoginResp(state, action.response);

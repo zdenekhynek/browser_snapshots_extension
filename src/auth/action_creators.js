@@ -1,3 +1,6 @@
+import Cookies from 'js-cookie';
+
+import { COOKIE_NAME } from './reducer';
 import * as dao from './dao.js';
 
 export const REQUEST_LOGIN = 'REQUEST_LOGIN';
@@ -21,6 +24,9 @@ export function login(username, password) {
     dispatch(requestLogin());
     dao.fetch(username, password)
       .then((response) => {
+        //  store cookie
+        Cookies.set(COOKIE_NAME, response.token);
+
         dispatch(receiveLogin(response || {}));
       })
       .catch((error) => {
