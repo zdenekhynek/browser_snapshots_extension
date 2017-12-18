@@ -32,7 +32,6 @@ export class App extends React.Component {
 }
 
 export function mapStateToProps({ auth }) { // ownProps
-  console.log('auth', auth);
   const isAuthorized = auth.get('isAuthorized', false);
 
   return { isAuthorized };

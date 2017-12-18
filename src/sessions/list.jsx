@@ -6,7 +6,7 @@ export default class SessionList extends React.Component {
     console.log('item', item);
     return (
       <li key={item.get('id')}>
-        Session: {item.get('start')}
+        Session: {item.get('start')}, {item.get('end')}
       </li>
     );
   }

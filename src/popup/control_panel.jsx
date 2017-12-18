@@ -14,14 +14,11 @@ export default class ControlPanel extends React.Component {
   }
 
   onStartBtnClick() {
-    console.log('onStartBtnClick');
     this.props.startSession(0);
   }
 
   onStopBtnClick() {
-    console.log('onStopBtnClick');
     const { sessionId } = this.props;
-    console.log('this.props', this.props);
 
     this.props.stopSession(sessionId, getDate());
   }

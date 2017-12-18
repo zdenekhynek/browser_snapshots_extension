@@ -26,11 +26,8 @@ export class Popup extends React.Component {
 }
 
 export function mapStateToProps({ sessions }) { // ownProps
-  console.log('mapStateToProps', sessions);
   const activeSession = sessions.last();
-  console.log('activeSession', activeSession);
   const sessionId = (activeSession) ? activeSession.get('id') : '';
-  console.log('sessionId', sessionId);
 
   return { sessions, sessionId };
 }

@@ -24,7 +24,6 @@ export function startSession(agent) {
     dispatch(requestStartSession());
     dao.startSession(agent, auth.get('token'))
       .then((response) => {
-        console.log('startSession dispatch');
         dispatch(receiveStartSession(response || {}));
       })
       .catch((error) => {
