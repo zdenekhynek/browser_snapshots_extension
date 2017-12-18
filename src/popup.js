@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Popup from './popup/index.jsx';
+import { Provider } from 'react-redux';
+
+import makeStore from './store';
+import App from './app.jsx';
 
 // Copyright (c) 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
@@ -131,11 +134,20 @@ function getDate() {
 const agent = 0;
 let session;
 
-document.addEventListener('DOMContentLoaded', () => {
-   ReactDOM.render(
-    <Popup />,
+function init() {
+  const store = makeStore();
+
+
+  ReactDOM.render((
+    <Provider store={store}>
+      <App />
+    </Provider>),
     document.getElementById('root')
   );
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  init();
 
   // const startBtn = document.getElementById('startBtn');
   // const stopBtn = document.getElementById('stopBtn');
