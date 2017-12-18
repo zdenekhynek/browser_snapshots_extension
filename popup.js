@@ -25,18 +25,24 @@ function getCurrentTab(callback) {
   });
 }
 
-function makePostRequest(apiUrl, params) {
+function makeRequest(apiUrl, params, method = 'post') {
   console.log('making request', params);
 
-  fetch(apiUrl, {
-    method: 'post',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  };
+
+  const options = {
+    method,
+    headers,
     body: JSON.stringify(params)
-  }).then((resp) => {
-    console.log('resp', resp);
+  };
+
+  return fetch(apiUrl, options).then((resp) => {
+    return resp.json().then((data) => {
+      return data;
+    });
   }).catch((err) => {
     console.error('err', err);
   });
@@ -59,18 +65,32 @@ function createParams(title, url, source_code, image) {
   return { title, url, source_code, image };
 }
 
-function saveSnapshot(title, url, source_code, image) {
+function saveSnapshot(agent, session, title, url, source_code, image) {
   const apiUrl = 'http://127.0.0.1:8000/snapshots/';
-  const params = createParams(title, url, source_code, image);
+  const params = { agent, session, title, url, source_code, image };
 
-  makePostRequest(apiUrl, params);
+  makeRequest(apiUrl, params);
+}
+
+function startSession(agent) {
+  const apiUrl = 'http://127.0.0.1:8000/sessions/';
+  const params = { agent };
+
+  return makeRequest(apiUrl, params);
+}
+
+function stopSession(session, agent, end) {
+  const apiUrl = `http://127.0.0.1:8000/sessions/${session}/`;
+  const params = { agent, end };
+
+  return makeRequest(apiUrl, params, 'put');
 }
 
 function getBodyHtmlFn() {
   return 'document.querySelector("html").innerHTML;';
 }
 
-function makeUrlSnapshot(title, url) {
+function makeUrlSnapshot(agent, session, title, url) {
   const scripts = [getBodyHtmlFn()];
   const script = scripts.reduce((acc, script) => {
      return acc + script
@@ -88,16 +108,24 @@ function makeUrlSnapshot(title, url) {
 
     //  capture screenshot
     chrome.tabs.captureVisibleTab(null, {}, (image) => {
-      saveSnapshot(title, url, sourceCode, image);
+      saveSnapshot(agent, session, title, url, sourceCode, image);
     });
   });
 }
 
-function makeSnapshot() {
+function makeSnapshot(agent, session) {
   getCurrentTab((title, url) => {
-    makeUrlSnapshot(title, url);
+    makeUrlSnapshot(agent, session, title, url);
   });
 }
+
+function getDate() {
+  return moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+}
+
+//  hardcoded agent it for now
+const agent = 0;
+let session;
 
 document.addEventListener('DOMContentLoaded', () => {
   const startBtn = document.getElementById('startBtn');
@@ -110,13 +138,26 @@ document.addEventListener('DOMContentLoaded', () => {
     makeSnapshot();
   });
   startBtn.addEventListener('click', () => {
-    makeSnapshot();
+    stopBtn.disabled = false;
+    startBtn.disabled = true;
 
-    intervalId = setInterval(() => {
-      makeSnapshot();
-    }, 1000 * 60);
+    //  hardcode agent id 0
+    startSession(agent).then((data) => {
+      console.log('data', data);
+      //  get newly created session id
+      session = data.id;
+      makeSnapshot(agent, session);
+
+      intervalId = setInterval(() => {
+        makeSnapshot(agent, session);
+      }, 1000 * 60);
+    });
   });
   stopBtn.addEventListener('click', () => {
     clearInterval(intervalId);
+    stopSession(session, agent, getDate());
+
+    stopBtn.disabled = true;
+    startBtn.disabled = false;
   });
 });
