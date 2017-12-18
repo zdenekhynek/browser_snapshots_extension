@@ -11,31 +11,40 @@ export default class ControlPanel extends React.Component {
 
     this.onStartBtnClick = this.onStartBtnClick.bind(this);
     this.onStopBtnClick = this.onStopBtnClick.bind(this);
+
+    this.state = { sessionRunning: false };
   }
 
   onStartBtnClick() {
     this.props.startSession(0);
+    this.setState({ sessionRunning: true });
   }
 
   onStopBtnClick() {
     const { sessionId } = this.props;
-
     this.props.stopSession(sessionId, getDate());
+    this.setState({ sessionRunning: false });
   }
 
   render() {
     const { sessions } = this.props;
+    const { sessionRunning } = this.state;
+
+    const startBtnDisabled = sessionRunning;
+    const stopBtnDisabled = !sessionRunning;
 
     return (
       <div>
         <button
           id="startBtn"
+          disabled={startBtnDisabled}
           onClick={this.onStartBtnClick}
         >
           Start snapshots
         </button>
         <button
           id="stopBtn"
+          disabled={stopBtnDisabled}
           onClick={this.onStopBtnClick}
         >
           Stop snapshots
