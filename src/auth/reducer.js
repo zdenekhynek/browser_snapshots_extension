@@ -14,8 +14,6 @@ export function getInitialState() {
   const token = getStoredToken();
   const isAuthorized = !!token;
 
-  console.log('token', token, isAuthorized);
-
   return Map({ isAuthorized, token });
 }
 
