@@ -1,4 +1,5 @@
 import * as dao from './dao.js';
+import { raiseError } from '../errors/action_creators';
 
 export const REQUEST_START_SESSION = 'REQUEST_START_SESSION';
 export const RECEIVE_START_SESSION = 'RECEIVE_START_SESSION';
@@ -28,6 +29,7 @@ export function startSession(agent) {
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console
+        dispatch(raiseError(error.message));
         return Promise.reject({ error });
       });
   }
@@ -60,6 +62,7 @@ export function stopSession(sessionId, end) {
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console
+        dispatch(raiseError(error.message));
         return Promise.reject({ error });
       });
   }

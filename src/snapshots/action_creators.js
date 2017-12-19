@@ -1,4 +1,5 @@
 import * as dao from './dao.js';
+import { raiseError } from '../errors/action_creators';
 
 export const REQUEST_CREATE_SNAPSHOT = 'REQUEST_CREATE_SNAPSHOT';
 export const RECEIVE_CREATE_SNAPSHOT = 'RECEIVE_CREATE_SNAPSHOT';
@@ -16,17 +17,19 @@ export function receiveCreateSnapshot(response) {
   }
 }
 
-export function createSession(session, title, url) {
+export function createSnapshot(session, agent, title, url, sourceCode, image) {
   return (dispatch, getState) => {
     const { auth } = getState();
 
     dispatch(requestCreateSnapshot());
-    dao.fetch(agent, auth.get('token'))
+    dao.createSnapshot(session, agent, title, url, sourceCode, image,
+      auth.get('token'))
       .then((response) => {
         dispatch(receiveCreateSnapshot(response || {}));
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console
+        dispatch(raiseError(error.message));
         return Promise.reject({ error });
       });
   }

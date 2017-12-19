@@ -42,4 +42,12 @@ export function getCurrentTabSnapshot(callback) {
   });
 }
 
-
+export function getSnapshot() {
+  return new Promise((resolve, reject) => {
+    getCurrentTabInfo((title, url) => {
+      getCurrentTabSnapshot((sourceCode, image) => {
+        resolve({ title, url, sourceCode, image });
+      })
+    });
+  });
+}

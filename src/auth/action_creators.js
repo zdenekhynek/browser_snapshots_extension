@@ -1,10 +1,12 @@
 import Cookies from 'js-cookie';
 
-import { COOKIE_NAME } from './reducer';
+import { NAME_COOKIE_NAME, TOKEN_COOKIE_NAME } from './reducer';
+import { raiseError } from '../errors/action_creators';
 import * as dao from './dao.js';
 
 export const REQUEST_LOGIN = 'REQUEST_LOGIN';
 export const RECEIVE_LOGIN = 'RECEIVE_LOGIN';
+export const LOGOUT = 'LOGOUT';
 
 export function requestLogin() {
   return {
@@ -25,13 +27,26 @@ export function login(username, password) {
     dao.fetch(username, password)
       .then((response) => {
         //  store cookie
-        Cookies.set(COOKIE_NAME, response.token);
+        Cookies.set(TOKEN_COOKIE_NAME, response.token);
+        Cookies.set(NAME_COOKIE_NAME, username);
+
+        response.username = username;
 
         dispatch(receiveLogin(response || {}));
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console
+        dispatch(raiseError(error.message));
         return Promise.reject({ error });
       });
+  }
+}
+
+export function logout() {
+  Cookies.remove(NAME_COOKIE_NAME);
+  Cookies.remove(TOKEN_COOKIE_NAME);
+
+  return {
+    type: LOGOUT,
   }
 }

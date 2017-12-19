@@ -31,21 +31,35 @@ export class Login extends React.Component {
   render() {
     return (
       <div>
-        <h2>Login</h2>
         <form onSubmit={this.onSubmit}>
-          <input
-            name="username"
-            type="input"
-            value={this.state.username}
-            onChange={this.onChange}
-          />
-          <input
-            name="password"
-            type="password"
-            value={this.state.password}
-            onChange={this.onChange}
-          />
-          <button type="submit">Submit</button>
+          <div className="form-group">
+            <input
+              className="form-control"
+              name="username"
+              placeholder="username"
+              type="input"
+              value={this.state.username}
+              onChange={this.onChange}
+            />
+          </div>
+          <div className="form-group">
+            <input
+              className="form-control"
+              name="password"
+              placeholder="password"
+              type="password"
+              value={this.state.password}
+              onChange={this.onChange}
+            />
+          </div>
+          <div className="form-group">
+            <button
+              className="btn btn-primary"
+              type="submit"
+            >
+              Login
+            </button>
+          </div>
         </form>
       </div>
     );

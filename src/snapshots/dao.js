@@ -1,12 +1,13 @@
 import { daoFetch, formatUrl } from '../utils/dao_helpers';
 
-export function fetch(agent, token) {
+export function createSnapshot(session, agent, title, url, source_code, image,
+  token) {
   const endpointUrl = 'snapshots/';
 
   const method = 'POST';
-  const body = { agent };
+  const body = { session, agent, title, url, source_code, image };
   const options = { method, body };
 
-  const url = formatUrl(endpointUrl);
-  return daoFetch(url, options, token);
+  const formattedUrl = formatUrl(endpointUrl);
+  return daoFetch(formattedUrl, options, token);
 }

@@ -32,11 +32,9 @@ export function daoFetch(url, opts, token = '') {
     options.body = JSON.stringify(options.body);
   }
 
-  console.log('options', options, defaultOptions, opts);
-
   return fetch(url, options).then((res) => {
     return res.json().then((obj) => obj);
   }, (err) => {
-    throw new NetworkError(err);
+    throw new Error(err);
   });
 }
