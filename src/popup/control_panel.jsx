@@ -7,6 +7,8 @@ import SessionList from '../sessions/list.jsx';
 import getDate from '../utils/get_date';
 import { getSnapshot } from '../utils/extension_utils.js';
 
+import classes from './control_panel.css';
+
 export default class ControlPanel extends React.Component {
   constructor(props) {
     super(props);
@@ -68,19 +70,23 @@ export default class ControlPanel extends React.Component {
     const stopBtnDisabled = !sessionRunning;
 
     return (
-      <div>
+      <div className={classes.controlPanel}>
         <button
           id="startBtn"
+          className={`btn btn-primary btn-sm ${classes.startBtn}`}
           disabled={startBtnDisabled}
           onClick={this.onStartBtnClick}
         >
+          <i className="fa fa-play" aria-hidden="true"></i>
           Start snapshots
         </button>
         <button
           id="stopBtn"
+          className={`btn btn-primary btn-sm ${classes.stopBtn}`}
           disabled={stopBtnDisabled}
           onClick={this.onStopBtnClick}
         >
+          <i className="fa fa-pause" aria-hidden="true"></i>
           Stop snapshots
         </button>
       </div>

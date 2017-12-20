@@ -1,3 +1,4 @@
-.title {
-  border-bottom: 1px solid gray;
+.app {
+  min-width: 400px;
+  padding: 10px;
 }

@@ -44,8 +44,7 @@ export class App extends React.Component {
       this.renderError(errors) : null;
 
     return (
-      <div>
-        <h1 className={classes.title}>Browser snapshot extension</h1>
+      <div className={classes.app}>
         {renderedComponent}
         {renderedErrors}
       </div>

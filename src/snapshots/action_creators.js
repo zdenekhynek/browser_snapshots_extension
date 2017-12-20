@@ -29,7 +29,7 @@ export function createSnapshot(session, agent, title, url, sourceCode, image) {
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console
-        dispatch(raiseError(error.message));
+        dispatch(raiseError('Failed creating snapshot'));
         return Promise.reject({ error });
       });
   }

@@ -29,7 +29,7 @@ export function startSession(agent) {
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console
-        dispatch(raiseError(error.message));
+        dispatch(raiseError('Failed starting session'));
         return Promise.reject({ error });
       });
   }
@@ -62,7 +62,7 @@ export function stopSession(sessionId, end) {
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console
-        dispatch(raiseError(error.message));
+        dispatch(raiseError('Failed stopping session'));
         return Promise.reject({ error });
       });
   }

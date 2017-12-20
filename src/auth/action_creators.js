@@ -36,7 +36,7 @@ export function login(username, password) {
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console
-        dispatch(raiseError(error.message));
+        dispatch(raiseError('Login failed'));
         return Promise.reject({ error });
       });
   }

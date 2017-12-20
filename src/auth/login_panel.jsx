@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 
 import { login } from './action_creators';
 
+import classes from './login_panel.css';
+
 export default class LoginPanel extends React.Component {
   constructor(props) {
     super(props);
@@ -10,7 +12,8 @@ export default class LoginPanel extends React.Component {
     this.onLogoutClick = this.onLogoutClick.bind(this);
   }
 
-  onLogoutClick() {
+  onLogoutClick(evt) {
+    evt.preventDefault();
     this.props.logout();
   }
 
@@ -22,9 +25,22 @@ export default class LoginPanel extends React.Component {
     }
 
     return (
-      <div>
-        Logged in as: {username}
-        <button onClick={this.onLogoutClick}>Log out</button>
+      <div className={classes.loginPanel}>
+        <div className={classes.list}>
+          <div className="">
+            <i className="fa fa-user"></i>
+            {username}
+          </div>
+          <div className="">
+            <a
+              className=""
+              onClick={this.onLogoutClick}
+            >
+                <i className="fa fa-fw fa-sign-out"></i>
+                Logout
+            </a>
+          </div>
+        </div>
       </div>
     );
   }

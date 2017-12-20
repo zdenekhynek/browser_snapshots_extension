@@ -1,0 +1,20 @@
+.loginPanel {
+  padding-bottom: 10px;
+  border-bottom: 1px solid gray;
+}
+
+.list {
+  position: relative;
+  height: 24px;
+}
+
+.list > div:first-child {
+  position: absolute;
+  left: 0;
+}
+
+
+.list > div:last-child {
+  position: absolute;
+  right: 0;
+}
