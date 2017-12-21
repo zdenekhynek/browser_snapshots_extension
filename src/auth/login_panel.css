@@ -1,4 +1,7 @@
 .loginPanel {
+  margin: -10px;
+  margin-bottom: 5px;
+  padding: 10px;
   padding-bottom: 10px;
   border-bottom: 1px solid gray;
 }

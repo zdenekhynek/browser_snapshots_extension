@@ -7,7 +7,8 @@ export function getCurrentTabInfo(callback) {
   };
 
   chrome.tabs.query(queryInfo, (tabs) => {
-    const tab = tabs[0];
+    console.log('tabs', tabs);
+    const tab = (tabs && tabs.length)? tabs[0]: {};
     const title = tab.title;
     const url = tab.url;
 
@@ -33,7 +34,7 @@ export function getCurrentTabSnapshot(callback) {
   chrome.tabs.executeScript({
     code: script
   }, function(data) {
-    const sourceCode = data[0];
+    const sourceCode = (data && data.length)? data[0] : '';
 
     //  capture screenshot
     chrome.tabs.captureVisibleTab(null, {}, (image) => {

@@ -49,6 +49,7 @@ export function mapStateToProps({ sessions, snapshots, auth }) { // ownProps
   });
 
   console.log('activeSession', activeSession, sessionId);
+  console.log('sessionsWithSnapshots', sessionsWithSnapshots.toJS());
 
   return { sessions: sessionsWithSnapshots, sessionId, isAuthorized, username };
 }

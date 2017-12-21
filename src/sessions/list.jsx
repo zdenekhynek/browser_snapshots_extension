@@ -6,10 +6,14 @@ import classes from './list.css';
 
 export default class SessionList extends React.Component {
   renderSnapshotItem(item) {
+    const formattedDate = moment(item.get('created_at')).format('h:mm:ss a, dddd');
+    const formatted = `at ${formattedDate}`;
+
     return (
       <li className={classes.snapshotItem} key={item.get('id')}>
         <i className="fa fa-camera" aria-hidden="true"></i>
         {item.get('title')}
+        <span className={classes.snapshotTime}>{formatted}</span>
       </li>
     )
   }
