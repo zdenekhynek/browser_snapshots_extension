@@ -14,7 +14,6 @@ export function reduceError(state, action) {
 }
 
 export default function(state = getInitialState(), action) {
-  console.log('reducer initial state');
   switch (action.type) {
     case RAISE_ERROR:
       return reduceError(state, action);

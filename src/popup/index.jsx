@@ -11,7 +11,6 @@ import ControlPanel from './control_panel.jsx';
 export class Popup extends React.Component {
   render() {
     const { sessions, sessionId, isAuthorized, username } = this.props;
-    console.log('Popup render', sessionId);
 
     return (
       <div>
@@ -47,9 +46,6 @@ export function mapStateToProps({ sessions, snapshots, auth }) { // ownProps
     });
     return session.set('snapshots', sessionSnapshots);
   });
-
-  console.log('activeSession', activeSession, sessionId);
-  console.log('sessionsWithSnapshots', sessionsWithSnapshots.toJS());
 
   return { sessions: sessionsWithSnapshots, sessionId, isAuthorized, username };
 }

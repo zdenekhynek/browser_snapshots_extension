@@ -19,31 +19,29 @@ export default class ControlPanel extends React.Component {
     this.state = { sessionRunning: false };
     this.pendingSession = false;
     this.snapshotInterval;
-
   }
 
-  componentDidUpdate() {
-    if (this.pendingSession && this.props.sessionId) {
-      this.startInterval();
+  componentWillReceiveProps(nextProps) {
+    const didSessionChanged = nextProps.sessionId !== this.props.sessionId;
+    if (this.pendingSession && didSessionChanged) {
+      this.startInterval(nextProps.sessionId);
       this.pendingSession = false;
     }
   }
 
-  startInterval(interval = 10000) {
+  startInterval(newSessionId, interval = 10000) {
     this.snapshotInterval = setInterval(() => {
-      this.makeSnapshot();
+      this.makeSnapshot(this.props.sessionId);
     }, interval);
 
-    this.makeSnapshot();
+    this.makeSnapshot(newSessionId);
   }
 
   stopInterval() {
     clearInterval(this.snapshotInterval);
   }
 
-  makeSnapshot() {
-    const { sessionId } = this.props;
-
+  makeSnapshot(sessionId) {
     getSnapshot().then(({ title, url, sourceCode, image }) => {
       this.props.createSnapshot(sessionId, 0, title, url, sourceCode, image);
     });

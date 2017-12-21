@@ -7,7 +7,6 @@ export function getCurrentTabInfo(callback) {
   };
 
   chrome.tabs.query(queryInfo, (tabs) => {
-    console.log('tabs', tabs);
     const tab = (tabs && tabs.length)? tabs[0]: {};
     const title = tab.title;
     const url = tab.url;

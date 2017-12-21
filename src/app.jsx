@@ -54,9 +54,6 @@ export class App extends React.Component {
 
 export function mapStateToProps({ auth, errors }) { // ownProps
   const isAuthorized = auth.get('isAuthorized', false);
-
-  console.log('errors', errors);
-
   return { isAuthorized, errors };
 }
 

@@ -21,7 +21,6 @@ export function startSession(agent) {
   return (dispatch, getState) => {
     const { auth } = getState();
 
-    console.log('startSession');
     dispatch(requestStartSession());
     dao.startSession(agent, auth.get('token'))
       .then((response) => {
