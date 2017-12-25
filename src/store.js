@@ -1,13 +1,12 @@
-import { applyMiddleware, createStore, compose } from 'redux';
-import thunk from 'redux-thunk';
+import { Store } from 'react-chrome-redux';
 
-import reducer from './reducer';
+export function createChromeStore() {
+  //  https://github.com/tshaddix/react-chrome-redux#overview
+  return new Store({
+    portName: 'BROWSER_SNAPSHOTS', // communication port name
+  });
+}
 
 export default function makeStore() {
-  const  finalCreateStore = compose(
-    applyMiddleware(thunk)
-  )(createStore);
-
-  const store = finalCreateStore(reducer);
-  return store;
+  return createChromeStore();
 }

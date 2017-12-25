@@ -4,5 +4,5 @@ export function setSnapshotInterval(interval) {
   return {
     type: SET_SNAPSHOT_INTERVAL,
     interval,
-  }
+  };
 }

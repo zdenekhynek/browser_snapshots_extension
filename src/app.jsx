@@ -16,13 +16,13 @@ export class App extends React.Component {
   renderPopup() {
     return (
       <Popup />
-    )
+    );
   }
 
   renderLogin() {
     return (
       <Login />
-    )
+    );
   }
 
   renderError(errors) {

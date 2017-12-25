@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { login } from './action_creators';
+import { loginAlias } from '../background';
 
 export class Login extends React.Component {
   constructor(props) {
@@ -19,13 +20,14 @@ export class Login extends React.Component {
     const name = target.name;
 
     this.setState({
-      [name]: value
+      [name]: value,
     });
   }
 
   onSubmit(evt) {
+    console.log('onSubmit');
     evt.preventDefault();
-    this.props.login(this.state.username, this.state.password);
+    this.props.loginAlias(this.state.username, this.state.password);
   }
 
   render() {

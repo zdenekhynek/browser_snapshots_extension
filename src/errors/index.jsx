@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
 export default class Error extends React.Component {
   constructor(props) {
@@ -17,7 +16,7 @@ export default class Error extends React.Component {
     const name = target.name;
 
     this.setState({
-      [name]: value
+      [name]: value,
     });
   }
 

@@ -1,4 +1,4 @@
-import { List, Map } from 'immutable';
+import { Map } from 'immutable';
 
 import { RAISE_ERROR, HIDE_ERROR } from './action_creators';
 
@@ -17,7 +17,6 @@ export default function(state = getInitialState(), action) {
   switch (action.type) {
     case RAISE_ERROR:
       return reduceError(state, action);
-      break;
     case HIDE_ERROR:
       return state.set('displayedError', false);
     default:

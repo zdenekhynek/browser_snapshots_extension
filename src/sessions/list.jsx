@@ -1,21 +1,20 @@
 import React from 'react';
-import { List } from 'immutable';
 import moment from 'moment';
 
 import classes from './list.css';
 
 export default class SessionList extends React.Component {
   renderSnapshotItem(item) {
-    const formattedDate = moment(item.get('created_at')).format('h:mm:ss a, dddd');
+    const formattedDate = moment(item.created_at).format('h:mm:ss a, dddd');
     const formatted = `at ${formattedDate}`;
 
     return (
-      <li className={classes.snapshotItem} key={item.get('id')}>
-        <i className="fa fa-camera" aria-hidden="true"></i>
-        {item.get('title')}
+      <li className={classes.snapshotItem} key={item.id}>
+        <i className="fa fa-camera" aria-hidden="true" />
+        {item.title}
         <span className={classes.snapshotTime}>{formatted}</span>
       </li>
-    )
+    );
   }
 
   renderSnapshots(items) {
@@ -23,30 +22,30 @@ export default class SessionList extends React.Component {
       <ul className={classes.snapshotsList}>
         {items.map(this.renderSnapshotItem)}
       </ul>
-    )
+    );
   }
 
   renderSessionItem(item) {
-    const renderedSnapshots = this.renderSnapshots(item.get('snapshots'));
+    const renderedSnapshots = this.renderSnapshots(item.snapshots);
 
-    const formattedStartDate = moment(item.get('start')).format('dddd, h:mm:ss a');
+    const formattedStartDate = moment(item.start.format('dddd, h:mm:ss a'));
     const formattedStart = `From ${formattedStartDate}`;
 
-    const formattedStopDate = moment(item.get('end')).format('dddd, h:mm:ss a');
-    const formattedStop = (item.get('end')) ? `to ${formattedStopDate}` : '';
+    const formattedStopDate = moment(item.end).format('dddd, h:mm:ss a');
+    const formattedStop = (item.end) ? `to ${formattedStopDate}` : '';
 
 
     return (
       <li key={item.get('id')} className={classes.sessionItem}>
         <div className={classes.sessionTitle}>
           <i className="fa fa-clock-o"></i>
-          Session #{item.get('id')}
+          Session #{item.id}
         </div>
         <div className={classes.sessionTimings}>
           {formattedStart} {formattedStop}
         </div>
         <div>
-        {renderedSnapshots}
+          {renderedSnapshots}
         </div>
       </li>
     );

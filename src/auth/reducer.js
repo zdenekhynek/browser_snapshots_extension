@@ -1,4 +1,4 @@
-import { List, Map } from 'immutable';
+import { Map } from 'immutable';
 import Cookies from 'js-cookie';
 
 import { RECEIVE_LOGIN, LOGOUT } from './action_creators';
@@ -46,7 +46,8 @@ export function reduceLogout(state) {
 }
 
 export default function(state = getInitialState(), action) {
-  switch(action.type) {
+  console.log('action', state, action);
+  switch (action.type) {
     case RECEIVE_LOGIN:
       return reduceLoginResp(state, action.response);
     case LOGOUT:

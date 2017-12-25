@@ -21,8 +21,9 @@ export function receiveLogin(response) {
   };
 }
 
-export function login(username, password) {
-  return (dispatch) => {
+export function login(dispatch, username, password) {
+  dispatch(() => {
+    console.log('requestlogin!');
     dispatch(requestLogin());
     dao.fetch(username, password)
       .then((response) => {
@@ -39,7 +40,7 @@ export function login(username, password) {
         dispatch(raiseError('Login failed'));
         return Promise.reject({ error });
       });
-  }
+  });
 }
 
 export function logout() {
@@ -48,5 +49,5 @@ export function logout() {
 
   return {
     type: LOGOUT,
-  }
+  };
 }

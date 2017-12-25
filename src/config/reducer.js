@@ -1,4 +1,4 @@
-import { List, Map } from 'immutable';
+import { Map } from 'immutable';
 
 import { SET_SNAPSHOT_INTERVAL } from './action_creators';
 

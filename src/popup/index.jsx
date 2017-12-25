@@ -29,22 +29,25 @@ export class Popup extends React.Component {
           />
         </div>
       </div>
-    )
+    );
   }
 }
 
 export function mapStateToProps({ sessions, snapshots, auth }) { // ownProps
-  const isAuthorized = auth.get('isAuthorized');
-  const username = auth.get('username');
+  const isAuthorized = !!auth.isAuthorized;
+  const username = auth.username;
 
-  const activeSession = sessions.last();
-  const sessionId = (activeSession) ? activeSession.get('id') : '';
+  const activeSession = sessions.slice(-1)[0];
+  const sessionId = (activeSession) ? activeSession.id : '';
 
   const sessionsWithSnapshots = sessions.map((session) => {
     const sessionSnapshots = snapshots.filter((snapshot) => {
-      return snapshot.get('session') === session.get('id');
+      return snapshot.session === session.id;
     });
-    return session.set('snapshots', sessionSnapshots);
+
+    session.snapshots = sessionSnapshots;
+
+    return session;
   });
 
   return { sessions: sessionsWithSnapshots, sessionId, isAuthorized, username };

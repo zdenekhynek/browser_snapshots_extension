@@ -7,14 +7,14 @@ export const RECEIVE_CREATE_SNAPSHOT = 'RECEIVE_CREATE_SNAPSHOT';
 export function requestCreateSnapshot() {
   return {
     type: REQUEST_CREATE_SNAPSHOT,
-  }
+  };
 }
 
 export function receiveCreateSnapshot(response) {
   return {
     type: RECEIVE_CREATE_SNAPSHOT,
-    response
-  }
+    response,
+  };
 }
 
 export function createSnapshot(session, agent, title, url, sourceCode, image) {
@@ -26,9 +26,9 @@ export function createSnapshot(session, agent, title, url, sourceCode, image) {
 
     if (lastSnapshot) {
       if (
-        lastSnapshot.get('agent') === agent &&
-        lastSnapshot.get('title') === title &&
-        lastSnapshot.get('url') === url
+        lastSnapshot.agent === agent &&
+        lastSnapshot.title === title &&
+        lastSnapshot.url === url
       ) {
         console.log('Do not track, same page');
         return;
@@ -39,7 +39,7 @@ export function createSnapshot(session, agent, title, url, sourceCode, image) {
 
     dispatch(requestCreateSnapshot());
     dao.createSnapshot(session, agent, title, url, sourceCode, image,
-      auth.get('token'))
+      auth.token)
       .then((response) => {
         dispatch(receiveCreateSnapshot(response || {}));
       })
@@ -48,5 +48,5 @@ export function createSnapshot(session, agent, title, url, sourceCode, image) {
         dispatch(raiseError('Failed creating snapshot'));
         return Promise.reject({ error });
       });
-  }
+  };
 }

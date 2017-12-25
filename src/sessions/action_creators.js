@@ -7,14 +7,14 @@ export const RECEIVE_START_SESSION = 'RECEIVE_START_SESSION';
 export function requestStartSession() {
   return {
     type: REQUEST_START_SESSION,
-  }
+  };
 }
 
 export function receiveStartSession(response) {
   return {
     type: RECEIVE_START_SESSION,
-    response
-  }
+    response,
+  };
 }
 
 export function startSession(agent) {
@@ -22,7 +22,7 @@ export function startSession(agent) {
     const { auth } = getState();
 
     dispatch(requestStartSession());
-    dao.startSession(agent, auth.get('token'))
+    dao.startSession(agent, auth.token)
       .then((response) => {
         dispatch(receiveStartSession(response || {}));
       })
@@ -31,7 +31,7 @@ export function startSession(agent) {
         dispatch(raiseError('Failed starting session'));
         return Promise.reject({ error });
       });
-  }
+  };
 }
 
 export const REQUEST_STOP_SESSION = 'REQUEST_STOP_SESSION';
@@ -46,8 +46,8 @@ export function requestStopSession() {
 export function receiveStopSession(response) {
   return {
     type: RECEIVE_STOP_SESSION,
-    response
-  }
+    response,
+  };
 }
 
 export function stopSession(sessionId, end) {
@@ -55,7 +55,7 @@ export function stopSession(sessionId, end) {
     const { auth } = getState();
 
     dispatch(requestStopSession());
-    dao.stopSession(sessionId, end, auth.get('token'))
+    dao.stopSession(sessionId, end, auth.token)
       .then((response) => {
         dispatch(receiveStopSession(response || {}));
       })
@@ -64,5 +64,5 @@ export function stopSession(sessionId, end) {
         dispatch(raiseError('Failed stopping session'));
         return Promise.reject({ error });
       });
-  }
+  };
 }

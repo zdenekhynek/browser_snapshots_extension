@@ -1,7 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
-
-import { login } from './action_creators';
 
 import classes from './login_panel.css';
 
@@ -36,8 +33,8 @@ export default class LoginPanel extends React.Component {
               className=""
               onClick={this.onLogoutClick}
             >
-                <i className="fa fa-fw fa-sign-out"></i>
-                Logout
+              <i className="fa fa-fw fa-sign-out"></i>
+              Logout
             </a>
           </div>
         </div>

@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
 import { startSession, stopSession } from '../sessions/action_creators';
 import { createSnapshot } from '../snapshots/action_creators';
