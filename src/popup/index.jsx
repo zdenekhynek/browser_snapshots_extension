@@ -1,9 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { startSession, stopSession } from '../sessions/action_creators';
-import { createSnapshot } from '../snapshots/action_creators';
-import { logout } from '../auth/action_creators';
+import {
+  startSessionAlias,
+  stopSessionAlias,
+  createSnapshotAlias,
+  logoutAlias,
+} from '../aliases';
 import SessionList from '../sessions/list.jsx';
 import LoginPanel from '../auth/login_panel.jsx';
 import ControlPanel from './control_panel.jsx';
@@ -18,14 +21,14 @@ export class Popup extends React.Component {
           <LoginPanel
             isAuthorized={isAuthorized}
             username={username}
-            logout={this.props.logout}
+            logout={this.props.logoutAlias}
           />
           <SessionList items={sessions} />
           <ControlPanel
             sessionId={sessionId}
-            startSession={this.props.startSession}
-            stopSession={this.props.stopSession}
-            createSnapshot={this.props.createSnapshot}
+            startSession={this.props.startSessionAlias}
+            stopSession={this.props.stopSessionAlias}
+            createSnapshot={this.props.createSnapshotAlias}
           />
         </div>
       </div>
@@ -55,9 +58,9 @@ export function mapStateToProps({ sessions, snapshots, auth }) { // ownProps
 
 export default connect(mapStateToProps,
   {
-    startSession,
-    stopSession,
-    createSnapshot,
-    logout,
+    startSessionAlias,
+    stopSessionAlias,
+    createSnapshotAlias,
+    logoutAlias,
   })(Popup);
 

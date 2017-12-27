@@ -1,8 +1,5 @@
 import React from 'react';
 
-import { startSession, stopSession } from '../sessions/action_creators';
-import { createSnapshot } from '../snapshots/action_creators';
-import SessionList from '../sessions/list.jsx';
 import getDate from '../utils/get_date';
 import { getSnapshot } from '../utils/extension_utils.js';
 
@@ -42,7 +39,8 @@ export default class ControlPanel extends React.Component {
 
   makeSnapshot(sessionId) {
     getSnapshot().then(({ title, url, sourceCode, image }) => {
-      this.props.createSnapshot(sessionId, 0, title, url, sourceCode, image);
+      this.props.createSnapshot(sessionId, 0, title, url, sourceCode,
+        image);
     });
   }
 

@@ -9,12 +9,17 @@ import App from './app.jsx';
 function init() {
   const store = makeStore();
 
-  ReactDOM.render((
-    <Provider store={store}>
-      <App />
-    </Provider>),
-    document.getElementById('root')
-  );
+  store.ready().then(() => {
+    console.log('store.ready()', store);
+    console.log(store.getState());
+
+    ReactDOM.render((
+      <Provider store={store}>
+        <App />
+      </Provider>),
+      document.getElementById('root')
+    );
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {

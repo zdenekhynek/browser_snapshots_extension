@@ -1,5 +1,7 @@
 import { Store } from 'react-chrome-redux';
 
+export let store;
+
 export function createChromeStore() {
   //  https://github.com/tshaddix/react-chrome-redux#overview
   return new Store({
@@ -8,5 +10,6 @@ export function createChromeStore() {
 }
 
 export default function makeStore() {
-  return createChromeStore();
+  store = createChromeStore();
+  return store;
 }

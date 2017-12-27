@@ -5,7 +5,8 @@ import classes from './list.css';
 
 export default class SessionList extends React.Component {
   renderSnapshotItem(item) {
-    const formattedDate = moment(item.created_at).format('h:mm:ss a, dddd');
+    const formattedDate = (item && item.created_at) ?
+      moment(item.created_at).format('h:mm:ss a, dddd') : '';
     const formatted = `at ${formattedDate}`;
 
     return (
@@ -26,19 +27,22 @@ export default class SessionList extends React.Component {
   }
 
   renderSessionItem(item) {
+    console.log('item', item);
     const renderedSnapshots = this.renderSnapshots(item.snapshots);
 
-    const formattedStartDate = moment(item.start.format('dddd, h:mm:ss a'));
+    const formattedStartDate = (item && item.start) ?
+      moment(item.start).format('dddd, h:mm:ss a') : '';
     const formattedStart = `From ${formattedStartDate}`;
 
-    const formattedStopDate = moment(item.end).format('dddd, h:mm:ss a');
+    const formattedStopDate = (item && item.end) ?
+      moment(item.end).format('dddd, h:mm:ss a') : '';
     const formattedStop = (item.end) ? `to ${formattedStopDate}` : '';
 
 
     return (
-      <li key={item.get('id')} className={classes.sessionItem}>
+      <li key={item.id} className={classes.sessionItem}>
         <div className={classes.sessionTitle}>
-          <i className="fa fa-clock-o"></i>
+          <i className="fa fa-clock-o" />
           Session #{item.id}
         </div>
         <div className={classes.sessionTimings}>

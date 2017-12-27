@@ -22,7 +22,7 @@ export function startSession(agent) {
     const { auth } = getState();
 
     dispatch(requestStartSession());
-    dao.startSession(agent, auth.token)
+    dao.startSession(agent, auth.get('token'))
       .then((response) => {
         dispatch(receiveStartSession(response || {}));
       })
@@ -40,7 +40,7 @@ export const RECEIVE_STOP_SESSION = 'RECEIVE_STOP_SESSION';
 export function requestStopSession() {
   return {
     type: REQUEST_STOP_SESSION,
-  }
+  };
 }
 
 export function receiveStopSession(response) {
@@ -55,7 +55,7 @@ export function stopSession(sessionId, end) {
     const { auth } = getState();
 
     dispatch(requestStopSession());
-    dao.stopSession(sessionId, end, auth.token)
+    dao.stopSession(sessionId, end, auth.get('token'))
       .then((response) => {
         dispatch(receiveStopSession(response || {}));
       })

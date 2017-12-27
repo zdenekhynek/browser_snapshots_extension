@@ -39,7 +39,7 @@ export function createSnapshot(session, agent, title, url, sourceCode, image) {
 
     dispatch(requestCreateSnapshot());
     dao.createSnapshot(session, agent, title, url, sourceCode, image,
-      auth.token)
+      auth.get('token'))
       .then((response) => {
         dispatch(receiveCreateSnapshot(response || {}));
       })

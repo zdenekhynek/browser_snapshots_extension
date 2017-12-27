@@ -28,7 +28,7 @@ export class App extends React.Component {
   renderError(errors) {
     return (
       <Errors
-        error={errors.get('error')}
+        error={errors.error}
         hideError={this.props.hideError}
       />
     );
@@ -40,7 +40,7 @@ export class App extends React.Component {
     const renderedComponent = (isAuthorized) ?
       this.renderPopup() : this.renderLogin();
 
-    const renderedErrors = (errors.get('displayedError')) ?
+    const renderedErrors = (errors.displayedError) ?
       this.renderError(errors) : null;
 
     return (
@@ -53,7 +53,7 @@ export class App extends React.Component {
 }
 
 export function mapStateToProps({ auth, errors }) { // ownProps
-  const isAuthorized = auth.get('isAuthorized', false);
+  const isAuthorized = !!auth.isAuthorized;
   return { isAuthorized, errors };
 }
 
