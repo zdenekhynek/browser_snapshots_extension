@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { login } from './action_creators';
 import { loginAlias } from '../aliases';
 
 export class Login extends React.Component {
@@ -74,4 +73,4 @@ export function mapStateToProps() {
   return {};
 }
 
-export default connect(mapStateToProps, { login })(Login);
+export default connect(mapStateToProps, { loginAlias })(Login);
