@@ -3,6 +3,7 @@ import { List, fromJS } from 'immutable';
 import {
   RECEIVE_START_SESSION,
   RECEIVE_STOP_SESSION,
+  CLEAR_SESSIONS,
 } from './action_creators';
 
 export function reduceStopSession(state, response) {
@@ -23,6 +24,8 @@ export default function(state = List(), action) {
       return state.push(fromJS(action.response));
     case RECEIVE_STOP_SESSION:
       return reduceStopSession(state, fromJS(action.response));
+    case CLEAR_SESSIONS:
+      return List();
     default:
       return state;
   }

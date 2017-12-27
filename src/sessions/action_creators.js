@@ -3,6 +3,7 @@ import { raiseError } from '../errors/action_creators';
 
 export const REQUEST_START_SESSION = 'REQUEST_START_SESSION';
 export const RECEIVE_START_SESSION = 'RECEIVE_START_SESSION';
+export const CLEAR_SESSIONS = 'CLEAR_SESSIONS';
 
 export function requestStartSession() {
   return {
@@ -14,6 +15,12 @@ export function receiveStartSession(response) {
   return {
     type: RECEIVE_START_SESSION,
     response,
+  };
+}
+
+export function clearSessions() {
+  return {
+    type: CLEAR_SESSIONS,
   };
 }
 

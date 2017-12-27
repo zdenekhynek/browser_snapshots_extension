@@ -3,6 +3,7 @@ import { raiseError } from '../errors/action_creators';
 
 export const REQUEST_CREATE_SNAPSHOT = 'REQUEST_CREATE_SNAPSHOT';
 export const RECEIVE_CREATE_SNAPSHOT = 'RECEIVE_CREATE_SNAPSHOT';
+export const CLEAR_SNAPSHOTS = 'CLEAR_SNAPSHOTS';
 
 export function requestCreateSnapshot() {
   return {
@@ -14,6 +15,12 @@ export function receiveCreateSnapshot(response) {
   return {
     type: RECEIVE_CREATE_SNAPSHOT,
     response,
+  };
+}
+
+export function clearSnapshots() {
+  return {
+    type: CLEAR_SNAPSHOTS,
   };
 }
 
