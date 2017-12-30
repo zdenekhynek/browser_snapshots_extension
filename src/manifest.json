@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+
+  "name": "Browser snapshots extension",
+  "description": "Takes a snapshot",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon-camera-20.png",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "scripts": ["background.bundle.js"]
+  },
+  "permissions": [
+    "activeTab",
+    "storage"
+  ]
+}

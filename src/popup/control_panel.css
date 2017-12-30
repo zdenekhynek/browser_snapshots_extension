@@ -1,0 +1,8 @@
+.controlPanel {
+  position: relative;
+}
+
+.startBtn,
+.stopBtn {
+  margin-right: 10px;
+}
