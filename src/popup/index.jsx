@@ -13,7 +13,8 @@ import ControlPanel from './control_panel.jsx';
 
 export class Popup extends React.Component {
   render() {
-    const { sessions, sessionId, isAuthorized, username } = this.props;
+    const { sessions, sessionId, isAuthorized, username, sessionRunning } =
+      this.props;
 
     return (
       <div>
@@ -29,6 +30,7 @@ export class Popup extends React.Component {
             startSession={this.props.startSessionAlias}
             stopSession={this.props.stopSessionAlias}
             createSnapshot={this.props.createSnapshotAlias}
+            sessionRunning={sessionRunning}
           />
         </div>
       </div>
@@ -36,9 +38,12 @@ export class Popup extends React.Component {
   }
 }
 
-export function mapStateToProps({ sessions, snapshots, auth }) { // ownProps
+export function mapStateToProps({ sessions, snapshots, auth, ui }) { // ownProps
   const isAuthorized = !!auth.isAuthorized;
   const username = auth.username;
+  const sessionRunning = ui.sessionRunning;
+
+  console.log('ui', ui);
 
   const activeSession = sessions.slice(-1)[0];
   const sessionId = (activeSession) ? activeSession.id : '';
@@ -53,7 +58,8 @@ export function mapStateToProps({ sessions, snapshots, auth }) { // ownProps
     return session;
   });
 
-  return { sessions: sessionsWithSnapshots, sessionId, isAuthorized, username };
+  return { sessions: sessionsWithSnapshots, sessionId, isAuthorized, username,
+    sessionRunning };
 }
 
 export default connect(mapStateToProps,

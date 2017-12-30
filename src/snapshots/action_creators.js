@@ -33,9 +33,9 @@ export function createSnapshot(session, agent, title, url, sourceCode, image) {
 
     if (lastSnapshot) {
       if (
-        lastSnapshot.agent === agent &&
-        lastSnapshot.title === title &&
-        lastSnapshot.url === url
+        lastSnapshot.get('agent') === agent &&
+        lastSnapshot.get('title') === title &&
+        lastSnapshot.get('url') === url
       ) {
         console.log('Do not track, same page');
         return;

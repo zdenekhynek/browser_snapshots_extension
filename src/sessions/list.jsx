@@ -27,7 +27,6 @@ export default class SessionList extends React.Component {
   }
 
   renderSessionItem(item) {
-    console.log('item', item);
     const renderedSnapshots = this.renderSnapshots(item.snapshots);
 
     const formattedStartDate = (item && item.start) ?

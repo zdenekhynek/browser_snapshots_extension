@@ -1,9 +1,34 @@
 import * as dao from './dao.js';
 import { raiseError } from '../errors/action_creators';
+import { createSnapshot } from '../snapshots/action_creators';
+import { getSnapshot } from '../utils/extension_utils.js';
 
 export const REQUEST_START_SESSION = 'REQUEST_START_SESSION';
 export const RECEIVE_START_SESSION = 'RECEIVE_START_SESSION';
 export const CLEAR_SESSIONS = 'CLEAR_SESSIONS';
+
+let snapshotInterval;
+
+export function makeSnapshot(dispatch, sessionId) {
+  getSnapshot().then(({ title, url, sourceCode, image }) => {
+    const action = createSnapshot(sessionId, 0, title, url, sourceCode,
+      image);
+    dispatch(action);
+  });
+}
+
+export function startInterval(dispatch, sessionId, interval = 1000) {
+  snapshotInterval = setInterval(() => {
+    makeSnapshot(dispatch, sessionId);
+  }, interval);
+
+  makeSnapshot(dispatch, sessionId);
+}
+
+export function stopInterval() {
+  clearInterval(snapshotInterval);
+}
+
 
 export function requestStartSession() {
   return {
@@ -32,6 +57,7 @@ export function startSession(agent) {
     dao.startSession(agent, auth.get('token'))
       .then((response) => {
         dispatch(receiveStartSession(response || {}));
+        startInterval(dispatch, response.id);
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console
@@ -65,6 +91,7 @@ export function stopSession(sessionId, end) {
     dao.stopSession(sessionId, end, auth.get('token'))
       .then((response) => {
         dispatch(receiveStopSession(response || {}));
+        stopInterval();
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console

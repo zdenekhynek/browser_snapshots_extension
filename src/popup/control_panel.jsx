@@ -1,7 +1,6 @@
 import React from 'react';
 
 import getDate from '../utils/get_date';
-import { getSnapshot } from '../utils/extension_utils.js';
 
 import classes from './control_panel.css';
 
@@ -11,55 +10,19 @@ export default class ControlPanel extends React.Component {
 
     this.onStartBtnClick = this.onStartBtnClick.bind(this);
     this.onStopBtnClick = this.onStopBtnClick.bind(this);
-
-    this.state = { sessionRunning: false };
-    this.pendingSession = false;
-    this.snapshotInterval;
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const didSessionChanged = nextProps.sessionId !== this.props.sessionId;
-    if (this.pendingSession && didSessionChanged) {
-      this.startInterval(nextProps.sessionId);
-      this.pendingSession = false;
-    }
-  }
-
-  startInterval(newSessionId, interval = 10000) {
-    this.snapshotInterval = setInterval(() => {
-      this.makeSnapshot(this.props.sessionId);
-    }, interval);
-
-    this.makeSnapshot(newSessionId);
-  }
-
-  stopInterval() {
-    clearInterval(this.snapshotInterval);
-  }
-
-  makeSnapshot(sessionId) {
-    getSnapshot().then(({ title, url, sourceCode, image }) => {
-      this.props.createSnapshot(sessionId, 0, title, url, sourceCode,
-        image);
-    });
   }
 
   onStartBtnClick() {
     this.props.startSession(0);
-    this.setState({ sessionRunning: true });
-    this.pendingSession = true;
   }
 
   onStopBtnClick() {
     const { sessionId } = this.props;
     this.props.stopSession(sessionId, getDate());
-    this.setState({ sessionRunning: false });
-    this.stopInterval();
   }
 
   render() {
-    const { sessions } = this.props;
-    const { sessionRunning } = this.state;
+    const { sessions, sessionRunning } = this.props;
 
     const startBtnDisabled = sessionRunning;
     const stopBtnDisabled = !sessionRunning;
@@ -72,7 +35,7 @@ export default class ControlPanel extends React.Component {
           disabled={startBtnDisabled}
           onClick={this.onStartBtnClick}
         >
-          <i className="fa fa-play" aria-hidden="true"></i>
+          <i className="fa fa-play" aria-hidden="true" />
           Start snapshots
         </button>
         <button
@@ -81,7 +44,7 @@ export default class ControlPanel extends React.Component {
           disabled={stopBtnDisabled}
           onClick={this.onStopBtnClick}
         >
-          <i className="fa fa-pause" aria-hidden="true"></i>
+          <i className="fa fa-pause" aria-hidden="true" />
           Stop snapshots
         </button>
       </div>

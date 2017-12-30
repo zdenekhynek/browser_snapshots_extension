@@ -6,6 +6,7 @@ import config from './config/reducer';
 import errors from './errors/reducer';
 import sessions from './sessions/reducer';
 import snapshots from './snapshots/reducer';
+import ui from './ui/reducer';
 
 export default combineReducers({
   agent,
@@ -14,4 +15,5 @@ export default combineReducers({
   errors,
   sessions,
   snapshots,
+  ui,
 });
