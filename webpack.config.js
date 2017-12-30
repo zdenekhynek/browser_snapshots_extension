@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -81,5 +82,10 @@ module.exports = {
       { from: './vendor', to: 'vendor' },
       { from: './src/assets' },
     ]),
+
+    new webpack.DefinePlugin({
+      API_URL: JSON.stringify('http://127.0.0.1:8000/'),
+      SNAP_INTERVAL: 1000,
+    }),
   ],
 };

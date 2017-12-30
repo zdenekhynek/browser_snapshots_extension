@@ -1,4 +1,4 @@
-/* global chrome */
+/* global chrome, SNAP_INTERVAL */
 
 import * as dao from './dao.js';
 import { raiseError } from '../errors/action_creators';
@@ -65,7 +65,7 @@ export function startSession(agent) {
     dao.startSession(agent, auth.get('token'))
       .then((response) => {
         dispatch(receiveStartSession(response || {}));
-        startInterval(dispatch, response.id);
+        startInterval(dispatch, response.id, SNAP_INTERVAL);
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console

@@ -1,3 +1,4 @@
+/* global API_URL */
 import { getQueryString } from '../utils/query_parameters';
 
 export function getDefaultOptions(token) {
@@ -15,7 +16,7 @@ export function getDefaultOptions(token) {
 }
 
 export function formatUrl(endpoint, id, params = {}) {
-  let url = `http://127.0.0.1:8000/${endpoint}`;
+  let url = `${API_URL}${endpoint}`;
 
   //  let url = `https://browser-snapshots.herokuapp.com/${endpoint}`;
   if (id) {
