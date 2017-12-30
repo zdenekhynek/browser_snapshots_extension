@@ -37,12 +37,12 @@ export function createSnapshot(session, agent, title, url, sourceCode, image) {
         lastSnapshot.get('title') === title &&
         lastSnapshot.get('url') === url
       ) {
-        console.log('Do not track, same page');
+        console.log('Do not track, same page'); // eslint-disable-line no-console, max-len
         return;
       }
     }
 
-    console.log('Track, new page');
+    console.log('Track, new page'); // eslint-disable-line no-console
 
     dispatch(requestCreateSnapshot());
     dao.createSnapshot(session, agent, title, url, sourceCode, image,

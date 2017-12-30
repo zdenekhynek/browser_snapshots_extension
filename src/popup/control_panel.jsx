@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import getDate from '../utils/get_date';
 
@@ -22,7 +23,7 @@ export default class ControlPanel extends React.Component {
   }
 
   render() {
-    const { sessions, sessionRunning } = this.props;
+    const { sessionRunning } = this.props;
 
     const startBtnDisabled = sessionRunning;
     const stopBtnDisabled = !sessionRunning;
@@ -51,3 +52,10 @@ export default class ControlPanel extends React.Component {
     );
   }
 }
+
+ControlPanel.propTypes = {
+  sessionId: PropTypes.number,
+  sessionRunning: PropTypes.bool,
+  startSession: PropTypes.func,
+  stopSession: PropTypes.func,
+};

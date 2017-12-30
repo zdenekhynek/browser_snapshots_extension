@@ -16,6 +16,7 @@ export function getDefaultOptions(token) {
 
 export function formatUrl(endpoint, id, params = {}) {
   let url = `http://127.0.0.1:8000/${endpoint}`;
+
   //  let url = `https://browser-snapshots.herokuapp.com/${endpoint}`;
   if (id) {
     url += `${id}/`;

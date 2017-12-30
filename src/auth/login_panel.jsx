@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import classes from './login_panel.css';
 
@@ -25,7 +26,7 @@ export default class LoginPanel extends React.Component {
       <div className={classes.loginPanel}>
         <div className={classes.list}>
           <div className="">
-            <i className="fa fa-user"></i>
+            <i className="fa fa-user" />
             {username}
           </div>
           <div className="">
@@ -33,7 +34,7 @@ export default class LoginPanel extends React.Component {
               className=""
               onClick={this.onLogoutClick}
             >
-              <i className="fa fa-fw fa-sign-out"></i>
+              <i className="fa fa-fw fa-sign-out" />
               Logout
             </a>
           </div>
@@ -42,3 +43,9 @@ export default class LoginPanel extends React.Component {
     );
   }
 }
+
+LoginPanel.propTypes = {
+  username: PropTypes.string,
+  isAuthorized: PropTypes.bool,
+  logout: PropTypes.func,
+};

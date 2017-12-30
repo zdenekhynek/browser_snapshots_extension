@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default class Error extends React.Component {
   constructor(props) {
@@ -28,8 +29,6 @@ export default class Error extends React.Component {
   render() {
     const { error, hideError } = this.props;
 
-    console.log('error', error);
-
     return (
       <div className="alert alert-danger">
         {error}
@@ -46,3 +45,8 @@ export default class Error extends React.Component {
   }
 }
 
+Error.propTypes = {
+  error: PropTypes.string,
+  hideError: PropTypes.func,
+  login: PropTypes.func,
+};

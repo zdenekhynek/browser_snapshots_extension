@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { loginAlias } from '../aliases';
@@ -24,7 +25,6 @@ export class Login extends React.Component {
   }
 
   onSubmit(evt) {
-    console.log('onSubmit');
     evt.preventDefault();
     this.props.loginAlias(this.state.username, this.state.password);
   }
@@ -68,6 +68,11 @@ export class Login extends React.Component {
     );
   }
 }
+
+Login.propTypes = {
+  loginAlias: PropTypes.func,
+};
+
 
 export function mapStateToProps() {
   return {};

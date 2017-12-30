@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Popup from './popup/index.jsx';
@@ -10,7 +11,7 @@ import classes from './app.css';
 
 export class App extends React.Component {
   componentDidCatch() {
-    console.error('componentDidCatch');
+    console.error('componentDidCatch'); // eslint-disable-line no-console
   }
 
   renderPopup() {
@@ -51,6 +52,12 @@ export class App extends React.Component {
     );
   }
 }
+
+App.propTypes = {
+  isAuthorized: PropTypes.bool,
+  errors: PropTypes.array,
+  hideError: PropTypes.func,
+};
 
 export function mapStateToProps({ auth, errors }) { // ownProps
   const isAuthorized = !!auth.isAuthorized;

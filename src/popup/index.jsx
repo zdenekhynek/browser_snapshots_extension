@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import {
@@ -37,6 +38,18 @@ export class Popup extends React.Component {
     );
   }
 }
+
+Popup.propTypes = {
+  sessionId: PropTypes.number,
+  sessions: PropTypes.array,
+  username: PropTypes.string,
+  sessionRunning: PropTypes.bool,
+  isAuthorized: PropTypes.bool,
+  logoutAlias: PropTypes.func,
+  startSessionAlias: PropTypes.func,
+  stopSessionAlias: PropTypes.func,
+  createSnapshotAlias: PropTypes.func,
+};
 
 export function mapStateToProps({ sessions, snapshots, auth, ui }) { // ownProps
   const isAuthorized = !!auth.isAuthorized;

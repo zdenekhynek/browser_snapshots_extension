@@ -1,6 +1,6 @@
 import { daoFetch, formatUrl } from '../utils/dao_helpers';
 
-export function createSnapshot(session, agent, title, url, source_code, image,
+export function createSnapshot(session, agent, title, url, source_code, image, // eslint-disable-line camelcase, max-len
   token) {
   const endpointUrl = 'snapshots/';
 

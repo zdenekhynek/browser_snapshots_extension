@@ -10,14 +10,11 @@ function init() {
   const store = makeStore();
 
   store.ready().then(() => {
-    console.log('store.ready()', store);
-    console.log(store.getState());
-
     ReactDOM.render((
       <Provider store={store}>
         <App />
       </Provider>),
-      document.getElementById('root')
+    document.getElementById('root')
     );
   });
 }

@@ -46,7 +46,6 @@ export function reduceLogout(state) {
 }
 
 export default function(state = getInitialState(), action) {
-  console.log('action', state, action);
   switch (action.type) {
     case RECEIVE_LOGIN:
       return reduceLoginResp(state, action.response);
