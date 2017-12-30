@@ -43,8 +43,6 @@ export function mapStateToProps({ sessions, snapshots, auth, ui }) { // ownProps
   const username = auth.username;
   const sessionRunning = ui.sessionRunning;
 
-  console.log('ui', ui);
-
   const activeSession = sessions.slice(-1)[0];
   const sessionId = (activeSession) ? activeSession.id : '';
 
