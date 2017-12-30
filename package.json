@@ -4,6 +4,9 @@
   "description": "",
   "main": "src/popup.js",
   "scripts": {
+    "build": "webpack",
+    "build:production": "NODE_ENV=production webpack --config webpack.production.config.js -p",
+    "build:staging": "NODE_ENV=production webpack --config webpack.staging.config.js",
     "watch": "NODE_ENV=development webpack --watch",
     "lint": "eslint --ext .js --ext .jsx ./",
     "test": "echo \"Error: no test specified\" && exit 1"
