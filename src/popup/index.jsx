@@ -7,6 +7,7 @@ import {
   stopSessionAlias,
   createSnapshotAlias,
   logoutAlias,
+  activeAgentAlias,
 } from '../aliases';
 import SessionList from '../sessions/list.jsx';
 import LoginPanel from '../auth/login_panel.jsx';
@@ -25,6 +26,7 @@ export class Popup extends React.Component {
             username={username}
             agents={agents}
             logout={this.props.logoutAlias}
+            onAgentChange={this.props.activeAgentAlias}
           />
           <SessionList items={sessions} />
           <ControlPanel
@@ -51,6 +53,7 @@ Popup.propTypes = {
   startSessionAlias: PropTypes.func,
   stopSessionAlias: PropTypes.func,
   createSnapshotAlias: PropTypes.func,
+  activeAgentAlias: PropTypes.func,
 };
 
 export function mapStateToProps({ agents, sessions, snapshots, auth, ui }) {
@@ -81,5 +84,6 @@ export default connect(mapStateToProps,
     stopSessionAlias,
     createSnapshotAlias,
     logoutAlias,
+    activeAgentAlias,
   })(Popup);
 

@@ -8,6 +8,7 @@ export default class LoginPanel extends React.Component {
     super(props);
 
     this.onLogoutClick = this.onLogoutClick.bind(this);
+    this.onAgentChange = this.onAgentChange.bind(this);
   }
 
   onLogoutClick(evt) {
@@ -15,9 +16,13 @@ export default class LoginPanel extends React.Component {
     this.props.logout();
   }
 
+  onAgentChange(evt) {
+    this.props.onAgentChange(evt.target.value);
+  }
+
   renderAgentsDropdown(agents) {
     return (
-      <select name="agents">
+      <select name="agents" onChange={this.onAgentChange}>
         {agents.map((agent) => {
           return (<option value={agent.id}>{agent.name}</option>);
         })}
@@ -63,4 +68,5 @@ LoginPanel.propTypes = {
   agents: PropTypes.array,
   isAuthorized: PropTypes.bool,
   logout: PropTypes.func,
+  onAgentChange: PropTypes.func,
 };

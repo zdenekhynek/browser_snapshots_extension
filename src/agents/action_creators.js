@@ -37,8 +37,11 @@ export function fetchAgents() {
 export const ACTIVATE_AGENT = 'ACTIVATE_AGENT';
 
 export function activateAgent(agentId) {
-  return {
-    type: ACTIVATE_AGENT,
-    agentId,
+  return (dispatch) => {
+    //  TODO - stop session
+    dispatch({
+      type: ACTIVATE_AGENT,
+      agentId,
+    });
   };
 }
