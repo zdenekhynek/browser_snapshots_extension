@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import classes from './list.css';
@@ -64,3 +65,7 @@ export default class SessionList extends React.Component {
     );
   }
 }
+
+SessionList.propTypes = {
+  items: PropTypes.array,
+};

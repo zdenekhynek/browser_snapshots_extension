@@ -14,7 +14,7 @@ module.exports = {
   // Extension will be built into ./dist folder,
   // which we can then load as unpacked extension in Chrome
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build'),
     filename: '[name].bundle.js',
   },
 
@@ -84,8 +84,8 @@ module.exports = {
     ]),
 
     new webpack.DefinePlugin({
-      API_URL: JSON.stringify('http://127.0.0.1:8000/'),
-      SNAP_INTERVAL: 1000,
+      API_URL: JSON.stringify('https://browser-snapshots.herokuapp.com/'),
+      SNAP_INTERVAL: 30000,
     }),
   ],
 };

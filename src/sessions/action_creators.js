@@ -1,9 +1,13 @@
-/* global chrome */
+/* global chrome, SNAP_INTERVAL */
 
 import * as dao from './dao.js';
 import { raiseError } from '../errors/action_creators';
 import { createSnapshot } from '../snapshots/action_creators';
-import { getSnapshot } from '../utils/extension_utils.js';
+import {
+  getSnapshot,
+  switchToTab,
+  getActiveTabId,
+} from '../utils/extension_utils.js';
 
 export const REQUEST_START_SESSION = 'REQUEST_START_SESSION';
 export const RECEIVE_START_SESSION = 'RECEIVE_START_SESSION';
@@ -14,20 +18,34 @@ export const ACTIVE_ICON = 'icon-camera-20-active.png';
 
 let snapshotInterval;
 
-export function makeSnapshot(dispatch, sessionId) {
-  getSnapshot().then(({ title, url, sourceCode, image }) => {
-    const action = createSnapshot(sessionId, 0, title, url, sourceCode,
-      image);
-    dispatch(action);
-  });
+export function makeSnapshot(dispatch, sessionId, recordedTabId) {
+  let currentTab;
+
+  getActiveTabId()
+    .then((activeTab) => {
+      //  switch to the tab where recording session
+      currentTab = activeTab;
+      return switchToTab(recordedTabId);
+    })
+    .then(() => {
+      getSnapshot().then(({ title, url, sourceCode, image }) => {
+        const action = createSnapshot(sessionId, 0, title, url, sourceCode,
+          image);
+        dispatch(action);
+
+        // switch back to where ever the tab was
+        switchToTab(currentTab);
+      });
+    });
 }
 
-export function startInterval(dispatch, sessionId, interval = 1000) {
+export function startInterval(dispatch, sessionId, recordedTabId,
+  interval = 1000) {
   snapshotInterval = setInterval(() => {
-    makeSnapshot(dispatch, sessionId);
+    makeSnapshot(dispatch, sessionId, recordedTabId);
   }, interval);
 
-  makeSnapshot(dispatch, sessionId);
+  makeSnapshot(dispatch, sessionId, recordedTabId);
 }
 
 export function stopInterval() {
@@ -61,17 +79,20 @@ export function startSession(agent) {
     //  update extension icon
     chrome.browserAction.setIcon({ path: ACTIVE_ICON });
 
-    dispatch(requestStartSession());
-    dao.startSession(agent, auth.get('token'))
-      .then((response) => {
-        dispatch(receiveStartSession(response || {}));
-        startInterval(dispatch, response.id);
-      })
-      .catch((error) => {
-        console.error(error); //  eslint-disable-line no-console
-        dispatch(raiseError('Failed starting session'));
-        return Promise.reject({ error });
-      });
+    getActiveTabId().then((activeTabId) => {
+      dispatch(requestStartSession());
+      dao.startSession(agent, auth.get('token'))
+        .then((response) => {
+          response.recordedTabId = activeTabId;
+          dispatch(receiveStartSession(response || {}));
+          startInterval(dispatch, response.id, activeTabId, SNAP_INTERVAL);
+        })
+        .catch((error) => {
+          console.error(error); //  eslint-disable-line no-console
+          dispatch(raiseError('Failed starting session'));
+          return Promise.reject({ error });
+        });
+    }).catch();
   };
 }
 
