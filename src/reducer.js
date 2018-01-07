@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-import agent from './agent/reducer';
+import agents from './agents/reducer';
 import auth from './auth/reducer';
 import config from './config/reducer';
 import errors from './errors/reducer';
@@ -9,7 +9,7 @@ import snapshots from './snapshots/reducer';
 import ui from './ui/reducer';
 
 export default combineReducers({
-  agent,
+  agents,
   auth,
   config,
   errors,

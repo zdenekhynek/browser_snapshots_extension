@@ -6,12 +6,29 @@ import Popup from './popup/index.jsx';
 import Login from './auth/login.jsx';
 import Errors from './errors/index.jsx';
 import { hideError } from './errors/action_creators';
+import { fetchAgentsAlias } from './aliases';
 
 import classes from './app.css';
 
 export class App extends React.Component {
+  componentDidMount() {
+    if (this.props.isAuthorized) {
+      this.fetchAgents();
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!this.props.isAuthorized && nextProps.isAuthorized) {
+      this.fetchAgents();
+    }
+  }
+
   componentDidCatch() {
     console.error('componentDidCatch'); // eslint-disable-line no-console
+  }
+
+  fetchAgents() {
+    this.props.fetchAgentsAlias();
   }
 
   renderPopup() {
@@ -57,6 +74,7 @@ App.propTypes = {
   isAuthorized: PropTypes.bool,
   errors: PropTypes.array,
   hideError: PropTypes.func,
+  fetchAgentsAlias: PropTypes.func,
 };
 
 export function mapStateToProps({ auth, errors }) { // ownProps
@@ -64,4 +82,6 @@ export function mapStateToProps({ auth, errors }) { // ownProps
   return { isAuthorized, errors };
 }
 
-export default connect(mapStateToProps, { hideError })(App);
+export default connect(mapStateToProps,
+  { hideError, fetchAgentsAlias }
+)(App);
