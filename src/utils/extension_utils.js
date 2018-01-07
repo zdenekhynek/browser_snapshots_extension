@@ -53,3 +53,17 @@ export function getSnapshot() {
     });
   });
 }
+
+export function getActiveTabId() {
+  return new Promise((resolve) => {
+    chrome.tabs.query({}, (tabs) => {
+      const activeTab = tabs.find((tab) => tab.active);
+      resolve(activeTab.id);
+    });
+  });
+}
+
+export function switchToTab(tabId) {
+  chrome.tabs.update(tabId, { active: true });
+}
+
