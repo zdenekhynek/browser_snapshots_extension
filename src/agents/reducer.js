@@ -4,7 +4,7 @@ import { RECEIVE_LIST_AGENTS, ACTIVATE_AGENT } from './action_creators';
 
 export function activateAgent(state, agentId) {
   return state.map((agent) => {
-    const active = (agent.get('id') === agentId);
+    const active = (agent.get('id') === +agentId);
     return agent.set('active', active);
   });
 }
@@ -26,7 +26,7 @@ export default function(state = List(), action) {
     case RECEIVE_LIST_AGENTS:
       return reduceAgentsList(action.response);
     case ACTIVATE_AGENT:
-      return activateAgent(action.agentId);
+      return activateAgent(state, action.agentId);
     default:
       return state;
   }
