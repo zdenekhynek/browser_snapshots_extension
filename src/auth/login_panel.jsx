@@ -21,10 +21,17 @@ export default class LoginPanel extends React.Component {
   }
 
   renderAgentsDropdown(agents) {
+    const activeAgent = agents.find((agent) => agent.active);
+    const defaultValue = activeAgent.id;
+
     return (
-      <select name="agents" onChange={this.onAgentChange}>
+      <select name="agents" value={defaultValue} onChange={this.onAgentChange}>
         {agents.map((agent) => {
-          return (<option value={agent.id}>{agent.name}</option>);
+          return (
+            <option value={agent.id}>
+              {agent.name}
+            </option>
+          );
         })}
       </select>
     );

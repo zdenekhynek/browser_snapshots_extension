@@ -77,9 +77,9 @@ App.propTypes = {
   fetchAgentsAlias: PropTypes.func,
 };
 
-export function mapStateToProps({ auth, errors }) { // ownProps
+export function mapStateToProps({ auth, agents, errors }) { // ownProps
   const isAuthorized = !!auth.isAuthorized;
-  return { isAuthorized, errors };
+  return { isAuthorized, errors, agents };
 }
 
 export default connect(mapStateToProps,

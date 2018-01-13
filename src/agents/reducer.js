@@ -1,4 +1,4 @@
-import { List, fromJS } from 'immutable';
+import { List, Map, fromJS } from 'immutable';
 
 import { RECEIVE_LIST_AGENTS, ACTIVATE_AGENT } from './action_creators';
 
@@ -9,12 +9,17 @@ export function activateAgent(state, agentId) {
   });
 }
 
-export function reduceAgentsList(agents) {
+export function reduceAgentsList(state, agents) {
+  // see if agents have changed
+  const activeAgentId = state.find((a) => {
+    return a.get('active');
+  }, null, Map()).get('id', 0);
+
   // activate the first agent
   let newState = fromJS(agents);
 
-  newState = newState.map((agent, i) => {
-    const active = (i === 0);
+  newState = newState.map((agent) => {
+    const active = (agent.get('id') === activeAgentId);
     return agent.set('active', active);
   });
 
@@ -24,7 +29,7 @@ export function reduceAgentsList(agents) {
 export default function(state = List(), action) {
   switch (action.type) {
     case RECEIVE_LIST_AGENTS:
-      return reduceAgentsList(action.response);
+      return reduceAgentsList(state, action.response);
     case ACTIVATE_AGENT:
       return activateAgent(state, action.agentId);
     default:
