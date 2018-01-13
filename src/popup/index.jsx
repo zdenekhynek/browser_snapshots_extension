@@ -7,6 +7,7 @@ import {
   stopSessionAlias,
   createSnapshotAlias,
   logoutAlias,
+  activeAgentAlias,
 } from '../aliases';
 import SessionList from '../sessions/list.jsx';
 import LoginPanel from '../auth/login_panel.jsx';
@@ -14,8 +15,8 @@ import ControlPanel from './control_panel.jsx';
 
 export class Popup extends React.Component {
   render() {
-    const { sessions, sessionId, isAuthorized, username, sessionRunning } =
-      this.props;
+    const { agents, sessions, sessionId, isAuthorized, username,
+      sessionRunning } = this.props;
 
     return (
       <div>
@@ -23,7 +24,9 @@ export class Popup extends React.Component {
           <LoginPanel
             isAuthorized={isAuthorized}
             username={username}
+            agents={agents}
             logout={this.props.logoutAlias}
+            onAgentChange={this.props.activeAgentAlias}
           />
           <SessionList items={sessions} />
           <ControlPanel
@@ -41,6 +44,7 @@ export class Popup extends React.Component {
 
 Popup.propTypes = {
   sessionId: PropTypes.number,
+  agents: PropTypes.array,
   sessions: PropTypes.array,
   username: PropTypes.string,
   sessionRunning: PropTypes.bool,
@@ -49,9 +53,10 @@ Popup.propTypes = {
   startSessionAlias: PropTypes.func,
   stopSessionAlias: PropTypes.func,
   createSnapshotAlias: PropTypes.func,
+  activeAgentAlias: PropTypes.func,
 };
 
-export function mapStateToProps({ sessions, snapshots, auth, ui }) { // ownProps
+export function mapStateToProps({ agents, sessions, snapshots, auth, ui }) {
   const isAuthorized = !!auth.isAuthorized;
   const username = auth.username;
   const sessionRunning = ui.sessionRunning;
@@ -69,8 +74,8 @@ export function mapStateToProps({ sessions, snapshots, auth, ui }) { // ownProps
     return session;
   });
 
-  return { sessions: sessionsWithSnapshots, sessionId, isAuthorized, username,
-    sessionRunning };
+  return { agents, sessions: sessionsWithSnapshots, sessionId, isAuthorized,
+    username, sessionRunning };
 }
 
 export default connect(mapStateToProps,
@@ -79,5 +84,6 @@ export default connect(mapStateToProps,
     stopSessionAlias,
     createSnapshotAlias,
     logoutAlias,
+    activeAgentAlias,
   })(Popup);
 

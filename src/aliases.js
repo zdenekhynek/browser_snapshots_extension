@@ -1,12 +1,15 @@
 import { login, logout } from './auth/action_creators';
 import { startSession, stopSession } from './sessions/action_creators';
 import { createSnapshot } from './snapshots/action_creators';
+import { fetchAgents, activateAgent } from './agents/action_creators';
 
 export const LOGIN_ALIAS = 'LOGIN_ALIAS';
 export const LOGOUT_ALIAS = 'LOGOUT_ALIAS';
 export const START_SESSION_ALIAS = 'START_SESSION_ALIAS';
 export const STOP_SESSION_ALIAS = 'STOP_SESSION_ALIAS';
 export const CREATE_SNAPSHOT_ALIAS = 'CREATE_SNAPSHOT_ALIAS';
+export const FETCH_AGENTS_ALIAS = 'FETCH_AGENTS_ALIAS';
+export const ACTIVATE_AGENT_ALIAS = 'ACTIVATE_AGENT_ALIAS';
 
 export function loginAlias(username, password) {
   return {
@@ -53,6 +56,28 @@ export function stopSessionAliasValue(action) {
   return stopSession(action.sessionId, action.end);
 }
 
+export function fetchAgentsAlias() {
+  return {
+    type: FETCH_AGENTS_ALIAS,
+  };
+}
+
+export function fetchAgentsAliasValue() {
+  return fetchAgents();
+}
+
+
+export function activeAgentAlias(agentId) {
+  return {
+    type: ACTIVATE_AGENT_ALIAS,
+    agentId,
+  };
+}
+
+export function activateAgentAliasValue(action) {
+  return activateAgent(action.agentId);
+}
+
 export function createSnapshotAlias(session, agent, title, url, sourceCode,
   image) {
   return {
@@ -80,4 +105,6 @@ export const aliases = {
   START_SESSION_ALIAS: startSessionAliasValue,
   STOP_SESSION_ALIAS: stopSessionAliasValue,
   CREATE_SNAPSHOT_ALIAS: createSnapshotAliasValue,
+  FETCH_AGENTS_ALIAS: fetchAgentsAliasValue,
+  ACTIVATE_AGENT_ALIAS: activateAgentAliasValue,
 };

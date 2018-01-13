@@ -18,7 +18,7 @@ export const ACTIVE_ICON = 'icon-camera-20-active.png';
 
 let snapshotInterval;
 
-export function makeSnapshot(dispatch, sessionId, recordedTabId) {
+export function makeSnapshot(dispatch, sessionId, agentId, recordedTabId) {
   let currentTab;
 
   getActiveTabId()
@@ -29,8 +29,8 @@ export function makeSnapshot(dispatch, sessionId, recordedTabId) {
     })
     .then(() => {
       getSnapshot().then(({ title, url, sourceCode, image }) => {
-        const action = createSnapshot(sessionId, 0, title, url, sourceCode,
-          image);
+        const action = createSnapshot(sessionId, agentId, title, url,
+          sourceCode, image);
         dispatch(action);
 
         // switch back to where ever the tab was
@@ -39,13 +39,13 @@ export function makeSnapshot(dispatch, sessionId, recordedTabId) {
     });
 }
 
-export function startInterval(dispatch, sessionId, recordedTabId,
+export function startInterval(dispatch, sessionId, agentId, recordedTabId,
   interval = 1000) {
   snapshotInterval = setInterval(() => {
-    makeSnapshot(dispatch, sessionId, recordedTabId);
+    makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
   }, interval);
 
-  makeSnapshot(dispatch, sessionId, recordedTabId);
+  makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
 }
 
 export function stopInterval() {
@@ -72,20 +72,23 @@ export function clearSessions() {
   };
 }
 
-export function startSession(agent) {
+export function startSession() {
   return (dispatch, getState) => {
-    const { auth } = getState();
+    const { auth, agents } = getState();
+
+    const activeAgent = agents.find((agent) => agent.get('active'));
+    const agentId = activeAgent.get('id');
 
     //  update extension icon
     chrome.browserAction.setIcon({ path: ACTIVE_ICON });
 
     getActiveTabId().then((activeTabId) => {
       dispatch(requestStartSession());
-      dao.startSession(agent, auth.get('token'))
+      dao.startSession(agentId, auth.get('token'))
         .then((response) => {
           response.recordedTabId = activeTabId;
           dispatch(receiveStartSession(response || {}));
-          startInterval(dispatch, response.id, activeTabId, SNAP_INTERVAL);
+          startInterval(dispatch, response.id, agentId, activeTabId, SNAP_INTERVAL);
         })
         .catch((error) => {
           console.error(error); //  eslint-disable-line no-console
