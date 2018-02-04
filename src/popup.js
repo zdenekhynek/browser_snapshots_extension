@@ -4,10 +4,13 @@ import { Provider } from 'react-redux';
 
 import makeStore from './store';
 import App from './app.jsx';
-
+import { startScenarioAlias } from './aliases';
 
 function init() {
   const store = makeStore();
+
+  console.log('Start scenario');
+  store.dispatch(startScenarioAlias());
 
   store.ready().then(() => {
     ReactDOM.render((

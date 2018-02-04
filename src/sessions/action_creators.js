@@ -83,12 +83,18 @@ export function startSession() {
     chrome.browserAction.setIcon({ path: ACTIVE_ICON });
 
     getActiveTabId().then((activeTabId) => {
+      //  SCENARIO - add scenario id
       dispatch(requestStartSession());
       dao.startSession(agentId, auth.get('token'))
         .then((response) => {
           response.recordedTabId = activeTabId;
           dispatch(receiveStartSession(response || {}));
-          startInterval(dispatch, response.id, agentId, activeTabId, SNAP_INTERVAL);
+
+          startInterval(dispatch, response.id, agentId, activeTabId,
+            SNAP_INTERVAL);
+
+          //  SCENARIO - start scenario here
+
         })
         .catch((error) => {
           console.error(error); //  eslint-disable-line no-console

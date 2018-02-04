@@ -67,3 +67,15 @@ export function switchToTab(tabId) {
   chrome.tabs.update(tabId, { active: true });
 }
 
+//  SCENARIOS
+//  clickNextVideo
+//  clickAdd
+//  clickOneFeatureVideo
+//  search for video
+
+export function executeScript(script) {
+  console.log('executing script', script);
+  chrome.tabs.executeScript({
+    code: script,
+  });
+}
