@@ -15,7 +15,9 @@ export function randomizeDuration(duration) {
 
 export function executeStep(step, doneClb) {
   console.log('executeStep', step, step.get('script'));
-  const duration = step.get('duration', 0);
+  let duration = step.get('duration', 0);
+  duration = randomizeDuration(duration);
+
   const repeat = step.get('repeat', 0);
   const scriptId = step.get('script');
   const script = getScriptById(scriptId);
