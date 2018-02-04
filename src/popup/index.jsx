@@ -13,7 +13,6 @@ import {
 import SessionList from '../sessions/list.jsx';
 import LoginPanel from '../auth/login_panel.jsx';
 import ControlPanel from './control_panel.jsx';
-import Scenarios from '../scenarios/index.jsx';
 
 export class Popup extends React.Component {
   render() {
@@ -25,17 +24,15 @@ export class Popup extends React.Component {
         <div id="container">
           <LoginPanel
             isAuthorized={isAuthorized}
+            sessionRunning={sessionRunning}
             username={username}
             agents={agents}
+            scenarios={scenarios}
             logout={this.props.logoutAlias}
             onAgentChange={this.props.activeAgentAlias}
-          />
-          <SessionList items={sessions} />
-          <Scenarios
-            scenarios={scenarios}
-            sessionRunning={sessionRunning}
             onScenarioChange={this.props.changeScenarioAlias}
           />
+          <SessionList items={sessions} />
           <ControlPanel
             sessionId={sessionId}
             startSession={this.props.startSessionAlias}
