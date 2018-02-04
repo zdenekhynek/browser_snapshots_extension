@@ -32,7 +32,6 @@ export function executeStep(step, doneClb) {
     repeatIndex++;
 
     if (repeat === -1 || repeatIndex <= repeat) {
-      console.log('infinite script');
       executeStep(step, doneClb);
     } else {
       doneClb();

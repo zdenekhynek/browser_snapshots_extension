@@ -8,6 +8,7 @@ import {
   switchToTab,
   getActiveTabId,
 } from '../utils/extension_utils.js';
+import { startScenarioAlias, stopScenarioAlias } from '../aliases';
 
 export const REQUEST_START_SESSION = 'REQUEST_START_SESSION';
 export const RECEIVE_START_SESSION = 'RECEIVE_START_SESSION';
@@ -93,8 +94,7 @@ export function startSession() {
           startInterval(dispatch, response.id, agentId, activeTabId,
             SNAP_INTERVAL);
 
-          //  SCENARIO - start scenario here
-
+          dispatch(startScenarioAlias());
         })
         .catch((error) => {
           console.error(error); //  eslint-disable-line no-console
@@ -133,6 +133,8 @@ export function stopSession(sessionId, end) {
       .then((response) => {
         dispatch(receiveStopSession(response || {}));
         stopInterval();
+
+        dispatch(stopScenarioAlias());
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console
