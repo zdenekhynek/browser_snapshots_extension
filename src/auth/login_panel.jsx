@@ -25,12 +25,18 @@ export default class LoginPanel extends React.Component {
     this.props.onScenarioChange(+evt.target.value);
   }
 
-  renderAgentsDropdown(agents) {
+  renderAgentsDropdown(agents, sessionRunning) {
     const activeAgent = agents.find((agent) => agent.active);
     const defaultValue = activeAgent.id;
+    const disabled = !!sessionRunning;
 
     return (
-      <select name="agents" value={defaultValue} onChange={this.onAgentChange}>
+      <select
+        name="agents"
+        value={defaultValue}
+        onChange={this.onAgentChange}
+        disabled={disabled}
+      >
         {agents.map((agent) => {
           return (
             <option value={agent.id}>
@@ -42,17 +48,19 @@ export default class LoginPanel extends React.Component {
     );
   }
 
-  renderScenarioDropdown(scenarios) {
+  renderScenarioDropdown(scenarios, sessionRunning) {
     const activeScenario = scenarios.find(
       (scenario) => scenario.active, null, { id: '' }
     );
     const defaultValue = activeScenario.id;
+    const disabled = !!sessionRunning;
 
     return (
       <select
         name="scenarios"
         value={defaultValue}
         onChange={this.onScenarioChange}
+        disabled={disabled}
       >
         {scenarios.map((scenario) => {
           return (
@@ -66,7 +74,8 @@ export default class LoginPanel extends React.Component {
   }
 
   render() {
-    const { isAuthorized, username, agents, scenarios } = this.props;
+    const { isAuthorized, username, agents, scenarios,
+      sessionRunning } = this.props;
 
     if (!isAuthorized) {
       return null;
@@ -81,11 +90,11 @@ export default class LoginPanel extends React.Component {
           </div>
           <div className={classes.colList}>
             <i className="fa fa-android" />
-            {this.renderAgentsDropdown(agents)}
+            {this.renderAgentsDropdown(agents, sessionRunning)}
           </div>
           <div className={classes.colList}>
             <i className="fa fa-sitemap" />
-            {this.renderScenarioDropdown(scenarios)}
+            {this.renderScenarioDropdown(scenarios, sessionRunning)}
           </div>
           <div className={classes.colList}>
             <a

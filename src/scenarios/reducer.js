@@ -28,7 +28,7 @@ export const SCENARIOS = [
       id: 1,
       name: 'Watch next up video',
       repeat: -1,
-      duration: 5000,
+      duration: 20000,
       steps: [
         {
           id: 2,
@@ -53,7 +53,7 @@ export function getInitialState() {
 
   //   make the first scenario active by default
   scenarios = scenarios.map((scenario, i) => {
-    return scenario.set('active', i === 1);
+    return scenario.set('active', i === 0);
   });
 
   return scenarios;
@@ -68,7 +68,6 @@ export function changeScenario(state, scenarioId) {
 export default function(state = getInitialState(), action) {
   switch (action.type) {
     case CHANGE_SCENARIO:
-      console.log('CHANGE_SCENARIO', action.scenarioId);
       return changeScenario(state, action.scenarioId);
     default:
       return state;
