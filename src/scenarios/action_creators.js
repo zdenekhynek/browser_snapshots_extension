@@ -3,6 +3,7 @@ import { executeScript } from '../utils/extension_utils';
 
 export const STOP_SCENARIO = 'STOP_SCENARIO';
 export const START_SCENARIO = 'START_SCENARIO';
+export const CHANGE_SCENARIO = 'CHANGE_SCENARIO';
 
 export let timeouts = [];
 
@@ -36,7 +37,6 @@ export function executeStep(step, doneClb) {
     } else {
       doneClb();
     }
-
   }, duration);
 
   timeouts.push(timeout);
@@ -92,5 +92,13 @@ export function stopScenario() {
   clearTimeouts();
 
   return { type: STOP_SCENARIO };
+}
+
+export function changeScenario(scenarioId) {
+  console.log('dispatching scenarioId', scenarioId);
+  return {
+    type: CHANGE_SCENARIO,
+    scenarioId,
+  };
 }
 

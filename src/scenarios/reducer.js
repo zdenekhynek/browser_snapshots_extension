@@ -1,10 +1,6 @@
 import { List, fromJS } from 'immutable';
 
-import {
-  RECEIVE_START_SESSION,
-  RECEIVE_STOP_SESSION,
-  CLEAR_SESSIONS,
-} from './action_creators';
+import { CHANGE_SCENARIO } from './action_creators';
 import { CLICK_SKIP_AD_SCRIPT, NEXT_VIDEO_SCRIPT } from './scenario_scripts';
 
 export function reduceStopSession(state, response) {
@@ -63,17 +59,18 @@ export function getInitialState() {
   return scenarios;
 }
 
-export default function(state = getInitialState(), action) {
-  return state;
+export function changeScenario(state, scenarioId) {
+  return state.map((scenario) => {
+    return scenario.set('active', scenario.get('id') === scenarioId);
+  });
+}
 
-  // switch (action.type) {
-  //   case RECEIVE_START_SESSION:
-  //     return state.push(fromJS(action.response));
-  //   case RECEIVE_STOP_SESSION:
-  //     return reduceStopSession(state, fromJS(action.response));
-  //   case CLEAR_SESSIONS:
-  //     return List();
-  //   default:
-  //     return state;
-  // }
+export default function(state = getInitialState(), action) {
+  switch (action.type) {
+    case CHANGE_SCENARIO:
+      console.log('CHANGE_SCENARIO', action.scenarioId);
+      return changeScenario(state, action.scenarioId);
+    default:
+      return state;
+  }
 }
