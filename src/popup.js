@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import makeStore from './store';
 import App from './app.jsx';
 
-
 function init() {
   const store = makeStore();
 

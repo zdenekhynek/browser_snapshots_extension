@@ -9,6 +9,7 @@ export default class LoginPanel extends React.Component {
 
     this.onLogoutClick = this.onLogoutClick.bind(this);
     this.onAgentChange = this.onAgentChange.bind(this);
+    this.onScenarioChange = this.onScenarioChange.bind(this);
   }
 
   onLogoutClick(evt) {
@@ -20,12 +21,22 @@ export default class LoginPanel extends React.Component {
     this.props.onAgentChange(evt.target.value);
   }
 
-  renderAgentsDropdown(agents) {
+  onScenarioChange(evt) {
+    this.props.onScenarioChange(+evt.target.value);
+  }
+
+  renderAgentsDropdown(agents, sessionRunning) {
     const activeAgent = agents.find((agent) => agent.active);
     const defaultValue = activeAgent.id;
+    const disabled = !!sessionRunning;
 
     return (
-      <select name="agents" value={defaultValue} onChange={this.onAgentChange}>
+      <select
+        name="agents"
+        value={defaultValue}
+        onChange={this.onAgentChange}
+        disabled={disabled}
+      >
         {agents.map((agent) => {
           return (
             <option value={agent.id}>
@@ -37,8 +48,34 @@ export default class LoginPanel extends React.Component {
     );
   }
 
+  renderScenarioDropdown(scenarios, sessionRunning) {
+    const activeScenario = scenarios.find(
+      (scenario) => scenario.active, null, { id: '' }
+    );
+    const defaultValue = activeScenario.id;
+    const disabled = !!sessionRunning;
+
+    return (
+      <select
+        name="scenarios"
+        value={defaultValue}
+        onChange={this.onScenarioChange}
+        disabled={disabled}
+      >
+        {scenarios.map((scenario) => {
+          return (
+            <option value={scenario.id}>
+              {scenario.name}
+            </option>
+          );
+        })}
+      </select>
+    );
+  }
+
   render() {
-    const { isAuthorized, username, agents } = this.props;
+    const { isAuthorized, username, agents, scenarios,
+      sessionRunning } = this.props;
 
     if (!isAuthorized) {
       return null;
@@ -53,7 +90,11 @@ export default class LoginPanel extends React.Component {
           </div>
           <div className={classes.colList}>
             <i className="fa fa-android" />
-            {this.renderAgentsDropdown(agents)}
+            {this.renderAgentsDropdown(agents, sessionRunning)}
+          </div>
+          <div className={classes.colList}>
+            <i className="fa fa-sitemap" />
+            {this.renderScenarioDropdown(scenarios, sessionRunning)}
           </div>
           <div className={classes.colList}>
             <a
@@ -73,7 +114,10 @@ export default class LoginPanel extends React.Component {
 LoginPanel.propTypes = {
   username: PropTypes.string,
   agents: PropTypes.array,
+  scenarios: PropTypes.array,
+  sessionRunning: PropTypes.bool,
   isAuthorized: PropTypes.bool,
   logout: PropTypes.func,
   onAgentChange: PropTypes.func,
+  onScenarioChange: PropTypes.func,
 };

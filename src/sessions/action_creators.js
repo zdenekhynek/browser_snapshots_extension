@@ -8,6 +8,7 @@ import {
   switchToTab,
   getActiveTabId,
 } from '../utils/extension_utils.js';
+import { startScenarioAlias, stopScenarioAlias } from '../aliases';
 
 export const REQUEST_START_SESSION = 'REQUEST_START_SESSION';
 export const RECEIVE_START_SESSION = 'RECEIVE_START_SESSION';
@@ -83,12 +84,17 @@ export function startSession() {
     chrome.browserAction.setIcon({ path: ACTIVE_ICON });
 
     getActiveTabId().then((activeTabId) => {
+      //  SCENARIO - add scenario id
       dispatch(requestStartSession());
       dao.startSession(agentId, auth.get('token'))
         .then((response) => {
           response.recordedTabId = activeTabId;
           dispatch(receiveStartSession(response || {}));
-          startInterval(dispatch, response.id, agentId, activeTabId, SNAP_INTERVAL);
+
+          startInterval(dispatch, response.id, agentId, activeTabId,
+            SNAP_INTERVAL);
+
+          dispatch(startScenarioAlias());
         })
         .catch((error) => {
           console.error(error); //  eslint-disable-line no-console
@@ -127,6 +133,8 @@ export function stopSession(sessionId, end) {
       .then((response) => {
         dispatch(receiveStopSession(response || {}));
         stopInterval();
+
+        dispatch(stopScenarioAlias());
       })
       .catch((error) => {
         console.error(error); //  eslint-disable-line no-console

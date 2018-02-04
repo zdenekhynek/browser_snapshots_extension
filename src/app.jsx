@@ -72,13 +72,14 @@ export class App extends React.Component {
 
 App.propTypes = {
   isAuthorized: PropTypes.bool,
-  errors: PropTypes.array,
+  errors: PropTypes.object,
   hideError: PropTypes.func,
   fetchAgentsAlias: PropTypes.func,
 };
 
 export function mapStateToProps({ auth, agents, errors }) { // ownProps
   const isAuthorized = !!auth.isAuthorized;
+  console.log('errors', errors);
   return { isAuthorized, errors, agents };
 }
 

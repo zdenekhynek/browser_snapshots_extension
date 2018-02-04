@@ -14,8 +14,13 @@
 
 .colList {
   display: flex;
-  flex: 33% 0 0;
+  flex: 30% 0 0;
   align-items: center;
+}
+
+.colList:first-child,
+.colList:last-child {
+  flex: 20% 0 0;
 }
 
 .colList:last-child {

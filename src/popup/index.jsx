@@ -8,6 +8,7 @@ import {
   createSnapshotAlias,
   logoutAlias,
   activeAgentAlias,
+  changeScenarioAlias,
 } from '../aliases';
 import SessionList from '../sessions/list.jsx';
 import LoginPanel from '../auth/login_panel.jsx';
@@ -15,18 +16,21 @@ import ControlPanel from './control_panel.jsx';
 
 export class Popup extends React.Component {
   render() {
-    const { agents, sessions, sessionId, isAuthorized, username,
-      sessionRunning } = this.props;
+    const { agents, sessions, sessionId, isAuthorized, isLogging, username,
+      sessionRunning, scenarios } = this.props;
 
     return (
       <div>
         <div id="container">
           <LoginPanel
             isAuthorized={isAuthorized}
+            sessionRunning={sessionRunning}
             username={username}
             agents={agents}
+            scenarios={scenarios}
             logout={this.props.logoutAlias}
             onAgentChange={this.props.activeAgentAlias}
+            onScenarioChange={this.props.changeScenarioAlias}
           />
           <SessionList items={sessions} />
           <ControlPanel
@@ -46,6 +50,7 @@ Popup.propTypes = {
   sessionId: PropTypes.number,
   agents: PropTypes.array,
   sessions: PropTypes.array,
+  scenarios: PropTypes.array,
   username: PropTypes.string,
   sessionRunning: PropTypes.bool,
   isAuthorized: PropTypes.bool,
@@ -54,9 +59,11 @@ Popup.propTypes = {
   stopSessionAlias: PropTypes.func,
   createSnapshotAlias: PropTypes.func,
   activeAgentAlias: PropTypes.func,
+  changeScenarioAlias: PropTypes.func,
 };
 
-export function mapStateToProps({ agents, sessions, snapshots, auth, ui }) {
+export function mapStateToProps({ agents, sessions, snapshots, auth, ui,
+  scenarios }) {
   const isAuthorized = !!auth.isAuthorized;
   const username = auth.username;
   const sessionRunning = ui.sessionRunning;
@@ -75,7 +82,7 @@ export function mapStateToProps({ agents, sessions, snapshots, auth, ui }) {
   });
 
   return { agents, sessions: sessionsWithSnapshots, sessionId, isAuthorized,
-    username, sessionRunning };
+    username, sessionRunning, scenarios };
 }
 
 export default connect(mapStateToProps,
@@ -85,5 +92,6 @@ export default connect(mapStateToProps,
     createSnapshotAlias,
     logoutAlias,
     activeAgentAlias,
+    changeScenarioAlias,
   })(Popup);
 
