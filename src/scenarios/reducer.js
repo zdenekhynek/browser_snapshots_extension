@@ -28,7 +28,7 @@ export const SCENARIOS = [
       id: 1,
       name: 'Watch next up video',
       repeat: -1,
-      duration: 20000,
+      duration: 40000,
       steps: [
         {
           id: 2,
