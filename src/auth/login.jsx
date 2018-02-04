@@ -30,6 +30,10 @@ export class Login extends React.Component {
   }
 
   render() {
+    const { isLogging } = this.props;
+
+    const disabled = isLogging;
+
     return (
       <div className="card card-login">
         <div className="card-body">
@@ -58,6 +62,7 @@ export class Login extends React.Component {
               <button
                 className="btn btn-primary btn-block"
                 type="submit"
+                disabled={disabled}
               >
                 Login
               </button>
@@ -70,12 +75,15 @@ export class Login extends React.Component {
 }
 
 Login.propTypes = {
+  isLogging: PropTypes.bool,
   loginAlias: PropTypes.func,
 };
 
 
-export function mapStateToProps() {
-  return {};
+export function mapStateToProps({ auth }) {
+  const isLogging = !!auth.isLogging;
+
+  return { isLogging };
 }
 
 export default connect(mapStateToProps, { loginAlias })(Login);

@@ -28,6 +28,10 @@ export function login(username, password) {
     dispatch(requestLogin());
     dao.fetch(username, password)
       .then((response) => {
+        if (!response.token) {
+          throw new Error('Login failed');
+        }
+
         //  store cookie
         Cookies.set(TOKEN_COOKIE_NAME, response.token);
         Cookies.set(NAME_COOKIE_NAME, username);
@@ -40,6 +44,7 @@ export function login(username, password) {
         dispatch(receiveLogin(response || {}));
       })
       .catch((error) => {
+        console.error('Login failed');
         console.error(error); //  eslint-disable-line no-console
         dispatch(raiseError('Login failed'));
         return Promise.reject({ error });

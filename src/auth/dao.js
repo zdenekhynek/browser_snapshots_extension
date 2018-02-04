@@ -8,6 +8,5 @@ export function fetch(username, password) {
   const options = { method, body };
 
   const url = formatUrl(endpointUrl);
-
   return daoFetch(url, options);
 }

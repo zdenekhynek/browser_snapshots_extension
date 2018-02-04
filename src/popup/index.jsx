@@ -16,7 +16,7 @@ import ControlPanel from './control_panel.jsx';
 
 export class Popup extends React.Component {
   render() {
-    const { agents, sessions, sessionId, isAuthorized, username,
+    const { agents, sessions, sessionId, isAuthorized, isLogging, username,
       sessionRunning, scenarios } = this.props;
 
     return (

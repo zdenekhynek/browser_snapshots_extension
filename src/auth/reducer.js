@@ -1,7 +1,8 @@
 import { Map } from 'immutable';
 import Cookies from 'js-cookie';
 
-import { RECEIVE_LOGIN, LOGOUT } from './action_creators';
+import { RECEIVE_LOGIN, REQUEST_LOGIN, LOGOUT } from './action_creators';
+import { RAISE_ERROR } from '../errors/action_creators';
 
 export const TOKEN_COOKIE_NAME = 'browser-snapshot-auth-token';
 export const NAME_COOKIE_NAME = 'browser-snapshot-auth-name';
@@ -17,10 +18,11 @@ export function getStoredName() {
 export function getInitialState() {
   //  do we have stored token in cookie?
   const token = getStoredToken();
+  const isLogging = false;
   const username = getStoredName();
-  const isAuthorized = !!token;
+  const isAuthorized = !!token && token !== 'undefined';
 
-  return Map({ isAuthorized, username, token });
+  return Map({ isAuthorized, username, token, isLogging });
 }
 
 export function reduceLoginResp(state, response) {
@@ -30,6 +32,7 @@ export function reduceLoginResp(state, response) {
 
   if (token) {
     newState = newState
+      .set('isLogging', false)
       .set('isAuthorized', true)
       .set('token', token)
       .set('username', username);
@@ -46,11 +49,16 @@ export function reduceLogout(state) {
 }
 
 export default function(state = getInitialState(), action) {
+  console.log('state', state);
   switch (action.type) {
+    case REQUEST_LOGIN:
+      return state.set('isLogging', true);
     case RECEIVE_LOGIN:
       return reduceLoginResp(state, action.response);
     case LOGOUT:
       return reduceLogout(state);
+    case RAISE_ERROR:
+      return state.set('isLogging', false);
     default:
       return state;
   }
