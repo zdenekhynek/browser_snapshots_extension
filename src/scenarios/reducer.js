@@ -46,6 +46,32 @@ export const SCENARIOS = [
       ],
     }],
   },
+  {
+    id: 3,
+    name: 'Let it watch, next up',
+    steps: [{
+      id: 1,
+      name: 'Watch next up video',
+      repeat: -1,
+      duration: 5 * 60 * 1000,
+      randomness: 2, // high variability, compared to default 10
+      steps: [
+        {
+          id: 2,
+          name: 'Click next up video',
+          repeat: 0,
+          script: NEXT_VIDEO_SCRIPT,
+        },
+        {
+          id: 2,
+          name: 'Click skip add',
+          repeat: 0,
+          duration: 10000,
+          script: CLICK_SKIP_AD_SCRIPT,
+        },
+      ],
+    }],
+  },
 ];
 
 export function getInitialState() {

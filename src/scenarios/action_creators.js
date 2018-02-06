@@ -7,16 +7,16 @@ export const CHANGE_SCENARIO = 'CHANGE_SCENARIO';
 
 export let timeouts = [];
 
-export function randomizeDuration(duration) {
-  const randomRange = duration / 10;
+export function randomizeDuration(duration, randomness = 10) {
+  const randomRange = duration / randomness;
   const random = Math.random() * randomRange;
   return duration + random;
 }
 
 export function executeStep(step, doneClb) {
-  console.log('executeStep', step, step.get('script'));
   let duration = step.get('duration', 0);
-  duration = randomizeDuration(duration);
+  const randomness = step.get('randomness', 10);
+  duration = randomizeDuration(duration, randomness);
 
   const repeat = step.get('repeat', 0);
   const scriptId = step.get('script');
@@ -30,7 +30,6 @@ export function executeStep(step, doneClb) {
   let repeatIndex = 0;
 
   const timeout = setTimeout(() => {
-    console.log('timeout', repeat, step, step.get('script'));
     executeScript(script);
     repeatIndex++;
 
@@ -45,14 +44,8 @@ export function executeStep(step, doneClb) {
 }
 
 export function executeSteps(steps) {
-  console.log('executeSteps', steps);
-  const firstStep = steps.first();
-
-  console.log('firstStep', firstStep);
-
   let stepIndex = 0;
   const nextStep = () => {
-    console.log('nextStep', stepIndex);
     if (stepIndex < steps.size) {
       const step = steps.get(stepIndex);
       stepIndex++;
@@ -75,7 +68,6 @@ export function clearTimeouts() {
 
 export function startScenario() {
   return (dispatch, getState) => {
-    console.log('start scenario dispatch');
     const { scenarios } = getState();
 
     const scenario = scenarios.find((s) => {
@@ -83,7 +75,6 @@ export function startScenario() {
     });
 
     const steps = scenario.get('steps');
-    console.log('steps', steps);
     executeSteps(steps);
 
     dispatch({ type: START_SCENARIO });
@@ -97,7 +88,6 @@ export function stopScenario() {
 }
 
 export function changeScenario(scenarioId) {
-  console.log('dispatching scenarioId', scenarioId);
   return {
     type: CHANGE_SCENARIO,
     scenarioId,
