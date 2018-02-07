@@ -11,10 +11,10 @@ module.exports = {
     background: './src/background.js',
   },
 
-  // Extension will be built into ./dist folder,
+  // Extension will be built into ./dev folder,
   // which we can then load as unpacked extension in Chrome
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dev'),
     filename: '[name].bundle.js',
   },
 

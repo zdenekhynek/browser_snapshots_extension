@@ -14,7 +14,7 @@ module.exports = {
   // Extension will be built into ./dist folder,
   // which we can then load as unpacked extension in Chrome
   output: {
-    path: path.resolve(__dirname, 'build'),
+    path: path.resolve(__dirname, 'dist'),
     filename: '[name].bundle.js',
   },
 
