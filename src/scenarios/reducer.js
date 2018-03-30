@@ -1,7 +1,14 @@
-import { List, fromJS } from 'immutable';
+import { fromJS } from 'immutable';
 
-import { CHANGE_SCENARIO } from './action_creators';
-import { CLICK_SKIP_AD_SCRIPT, NEXT_VIDEO_SCRIPT } from './scenario_scripts';
+import { CHANGE_SCENARIO, CHANGE_SCENARIO_PARAM } from './action_creators';
+import {
+  CLICK_SKIP_AD_SCRIPT,
+  NEXT_VIDEO_SCRIPT,
+  CLEAR_CACHE_SCRIPT,
+  GO_ON_YOUTUBE_SCRIPT,
+  SEARCH_YOUTUBE,
+  CLICK_SEARCH_RESULT,
+} from './scenario_scripts';
 
 export function reduceStopSession(state, response) {
   return state.map((session) => {
@@ -72,6 +79,54 @@ export const SCENARIOS = [
       ],
     }],
   },
+  {
+    id: 4,
+    name: 'Search on YouTube',
+    controls: ['searchInput'],
+    steps: [{
+      id: 1,
+      name: 'Clear cache',
+      duration: 0,
+      script: CLEAR_CACHE_SCRIPT,
+    }, {
+      id: 2,
+      name: 'Go on YouTube',
+      duration: 1000,
+      script: GO_ON_YOUTUBE_SCRIPT,
+    }, {
+      id: 3,
+      name: 'Search YouTube',
+      duration: 3000,
+      script: SEARCH_YOUTUBE,
+      args: ['plane'],
+    }, {
+      id: 4,
+      name: 'Click first result',
+      duration: 5000,
+      script: CLICK_SEARCH_RESULT,
+      args: [0],
+    }, {
+      id: 5,
+      name: 'Watch next up video',
+      repeat: 10,
+      duration: 40000,
+      steps: [
+        {
+          id: 1,
+          name: 'Click next up video',
+          repeat: 0,
+          script: NEXT_VIDEO_SCRIPT,
+        },
+        {
+          id: 2,
+          name: 'Click skip add',
+          repeat: 0,
+          duration: 10000,
+          script: CLICK_SKIP_AD_SCRIPT,
+        },
+      ],
+    }],
+  },
 ];
 
 export function getInitialState() {
@@ -91,10 +146,17 @@ export function changeScenario(state, scenarioId) {
   });
 }
 
+export function changeScenarioParam(state, action) {
+  console.log('changeScenarioParam', action);
+  return state;
+}
+
 export default function(state = getInitialState(), action) {
   switch (action.type) {
     case CHANGE_SCENARIO:
       return changeScenario(state, action.scenarioId);
+    case CHANGE_SCENARIO_PARAM:
+      return changeScenarioParam(state, action);
     default:
       return state;
   }

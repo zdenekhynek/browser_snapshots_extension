@@ -1,4 +1,6 @@
 .loginPanel {
+  display: flex;
+  flex-direction: column;
   margin: -10px;
   margin-bottom: 5px;
   padding: 10px;
@@ -6,23 +8,11 @@
   border-bottom: 1px solid gray;
 }
 
-.list {
+.row {
   display: flex;
   position: relative;
-  height: 24px;
+  justify-content: space-between;
+  padding: 2px 0;
 }
 
-.colList {
-  display: flex;
-  flex: 30% 0 0;
-  align-items: center;
-}
-
-.colList:first-child,
-.colList:last-child {
-  flex: 20% 0 0;
-}
-
-.colList:last-child {
-  justify-content: flex-end;
-}
+.rowItem {}

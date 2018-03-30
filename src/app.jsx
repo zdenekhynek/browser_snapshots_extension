@@ -7,6 +7,9 @@ import Login from './auth/login.jsx';
 import Errors from './errors/index.jsx';
 import { hideError } from './errors/action_creators';
 import { fetchAgentsAlias } from './aliases';
+import { navigateToUrl, clearCache, executeScript }
+  from './utils/extension_utils';
+import { searchYoutube, clickSearchResult } from './scenarios/scenario_scripts';
 
 import classes from './app.css';
 
@@ -63,6 +66,16 @@ export class App extends React.Component {
 
     return (
       <div className={classes.app}>
+        <button onClick={() => clearCache()}>Clear cache</button>
+        <button onClick={() => navigateToUrl('http://youtube.com')}>
+          Navigate to YT
+        </button>
+        <button onClick={() => executeScript(searchYoutube('honesty'))}>
+          Search
+        </button>
+        <button onClick={() => executeScript(clickSearchResult(0))}>
+          Click search
+        </button>
         {renderedComponent}
         {renderedErrors}
       </div>

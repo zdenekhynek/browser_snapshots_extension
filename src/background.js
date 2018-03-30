@@ -18,7 +18,7 @@ const finalCreateStore = compose(
   )
 )(createStore);
 
-const store = finalCreateStore(reducer);
+export const store = finalCreateStore(reducer);
 
 wrapStore(store, {
   portName: 'BROWSER_SNAPSHOTS',

@@ -9,6 +9,8 @@ import {
   logoutAlias,
   activeAgentAlias,
   changeScenarioAlias,
+  changeScenarioParamAlias,
+  setTaskModeAlias,
 } from '../aliases';
 import SessionList from '../sessions/list.jsx';
 import LoginPanel from '../auth/login_panel.jsx';
@@ -16,8 +18,8 @@ import ControlPanel from './control_panel.jsx';
 
 export class Popup extends React.Component {
   render() {
-    const { agents, sessions, sessionId, isAuthorized, isLogging, username,
-      sessionRunning, scenarios } = this.props;
+    const { agents, modes, sessions, sessionId, isAuthorized, isLogging,
+      username, sessionRunning, scenarios } = this.props;
 
     return (
       <div>
@@ -26,11 +28,14 @@ export class Popup extends React.Component {
             isAuthorized={isAuthorized}
             sessionRunning={sessionRunning}
             username={username}
+            modes={modes}
             agents={agents}
             scenarios={scenarios}
             logout={this.props.logoutAlias}
             onAgentChange={this.props.activeAgentAlias}
             onScenarioChange={this.props.changeScenarioAlias}
+            onScenarioParamChange={this.props.changeScenarioParamAlias}
+            onTaskModeChange={this.props.setTaskModeAlias}
           />
           <SessionList items={sessions} />
           <ControlPanel
@@ -48,6 +53,7 @@ export class Popup extends React.Component {
 
 Popup.propTypes = {
   sessionId: PropTypes.number,
+  modes: PropTypes.array,
   agents: PropTypes.array,
   sessions: PropTypes.array,
   scenarios: PropTypes.array,
@@ -60,9 +66,11 @@ Popup.propTypes = {
   createSnapshotAlias: PropTypes.func,
   activeAgentAlias: PropTypes.func,
   changeScenarioAlias: PropTypes.func,
+  changeScenarioParamAlias: PropTypes.func,
+  setTaskModeAlias: PropTypes.func,
 };
 
-export function mapStateToProps({ agents, sessions, snapshots, auth, ui,
+export function mapStateToProps({ agents, tasks, sessions, snapshots, auth, ui,
   scenarios }) {
   const isAuthorized = !!auth.isAuthorized;
   const username = auth.username;
@@ -81,8 +89,10 @@ export function mapStateToProps({ agents, sessions, snapshots, auth, ui,
     return session;
   });
 
-  return { agents, sessions: sessionsWithSnapshots, sessionId, isAuthorized,
-    username, sessionRunning, scenarios };
+  const modes = tasks.modes;
+
+  return { agents, modes, sessions: sessionsWithSnapshots, sessionId,
+    isAuthorized, username, sessionRunning, scenarios };
 }
 
 export default connect(mapStateToProps,
@@ -93,5 +103,7 @@ export default connect(mapStateToProps,
     logoutAlias,
     activeAgentAlias,
     changeScenarioAlias,
+    changeScenarioParamAlias,
+    setTaskModeAlias,
   })(Popup);
 

@@ -1,9 +1,12 @@
+import { List } from 'immutable';
+
 import { getScriptById } from './scenario_scripts';
 import { executeScript } from '../utils/extension_utils';
 
 export const STOP_SCENARIO = 'STOP_SCENARIO';
 export const START_SCENARIO = 'START_SCENARIO';
 export const CHANGE_SCENARIO = 'CHANGE_SCENARIO';
+export const CHANGE_SCENARIO_PARAM = 'CHANGE_SCENARIO_PARAM';
 
 export let timeouts = [];
 
@@ -20,7 +23,12 @@ export function executeStep(step, doneClb) {
 
   const repeat = step.get('repeat', 0);
   const scriptId = step.get('script');
-  const script = getScriptById(scriptId);
+  const scriptArgs = step.get('args', List()).toJS();
+
+  console.log('scriptId', scriptId, 'scriptArgs', scriptArgs, duration);
+
+  const script = getScriptById(scriptId, scriptArgs);
+  console.log('script', script);
 
   //  if video has recursion
   if (step.has('steps')) {
@@ -30,7 +38,14 @@ export function executeStep(step, doneClb) {
   let repeatIndex = 0;
 
   const timeout = setTimeout(() => {
-    executeScript(script);
+    if (typeof script === 'string') {
+      //  script is a string which should be run on a page
+      executeScript(script);
+    } else if (script.hasOwnProperty('fn')) {
+      //  script is a function which calls extension API
+      script.fn.apply(this, script.args);
+    }
+
     repeatIndex++;
 
     if (repeat === -1 || repeatIndex <= repeat) {
@@ -91,6 +106,14 @@ export function changeScenario(scenarioId) {
   return {
     type: CHANGE_SCENARIO,
     scenarioId,
+  };
+}
+
+export function changeScenarioParam(scenarioId, param, value) {
+  return {
+    type: CHANGE_SCENARIO_PARAM,
+    param,
+    value,
   };
 }
 

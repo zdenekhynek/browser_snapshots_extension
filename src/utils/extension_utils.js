@@ -67,6 +67,30 @@ export function switchToTab(tabId) {
   chrome.tabs.update(tabId, { active: true });
 }
 
+export function clearCache() {
+  chrome.browsingData.remove(
+    { since: 0 },
+    {
+      appcache: true,
+      cache: true,
+      cookies: true,
+      downloads: true,
+      fileSystems: true,
+      formData: true,
+      history: true,
+      indexedDB: true,
+      localStorage: true,
+      pluginData: true,
+      passwords: true,
+      webSQL: true,
+    }
+  );
+}
+
+export function navigateToUrl(url) {
+  chrome.tabs.update({ url });
+}
+
 //  SCENARIOS
 //  clickNextVideo
 //  clickAdd
@@ -74,7 +98,6 @@ export function switchToTab(tabId) {
 //  search for video
 
 export function executeScript(script) {
-  console.log('executing script', script);
   chrome.tabs.executeScript({
     code: script,
   });

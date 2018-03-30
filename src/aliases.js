@@ -4,9 +4,11 @@ import {
   startScenario,
   stopScenario,
   changeScenario,
+  changeScenarioParam,
 } from './scenarios/action_creators';
 import { createSnapshot } from './snapshots/action_creators';
 import { fetchAgents, activateAgent } from './agents/action_creators';
+import { setTaskMode } from './tasks/action_creators';
 
 export const LOGIN_ALIAS = 'LOGIN_ALIAS';
 export const LOGOUT_ALIAS = 'LOGOUT_ALIAS';
@@ -18,6 +20,9 @@ export const ACTIVATE_AGENT_ALIAS = 'ACTIVATE_AGENT_ALIAS';
 export const START_SCENARIO_ALIAS = 'START_SCENARIO_ALIAS';
 export const STOP_SCENARIO_ALIAS = 'STOP_SCENARIO_ALIAS';
 export const CHANGE_SCENARIO_ALIAS = 'CHANGE_SCENARIO_ALIAS';
+export const CHANGE_SCENARIO_PARAM_ALIAS = 'CHANGE_SCENARIO_PARAM_ALIAS';
+export const SET_TASK_MODE_ALIAS = 'SET_TASK_MODE_ALIAS';
+
 
 export function loginAlias(username, password) {
   return {
@@ -135,6 +140,31 @@ export function changeScenarioAliasValue(action) {
   return changeScenario(action.scenarioId);
 }
 
+export function changeScenarioParamsAlias(param, value) {
+  return {
+    type: CHANGE_SCENARIO_PARAM_ALIAS,
+    param,
+    value,
+  };
+}
+
+export function changeScenarioParamsAliasValue(action) {
+  return changeScenarioParam(action.param, action.value);
+}
+
+
+export function setTaskModeAlias(taskMode) {
+  return {
+    type: SET_TASK_MODE_ALIAS,
+    taskMode,
+  };
+}
+
+export function setTaskModeAliasValue(action) {
+  console.log('setTaskModeAliasValue', action);
+  return setTaskMode(action.taskMode);
+}
+
 export const aliases = {
   // this key is the name of the action to proxy, the value is the action
   // creator that gets executed when the proxied action is received in the
@@ -149,4 +179,6 @@ export const aliases = {
   START_SCENARIO_ALIAS: startScenarioAliasValue,
   STOP_SCENARIO_ALIAS: stopScenarioAliasValue,
   CHANGE_SCENARIO_ALIAS: changeScenarioAliasValue,
+  CHANGE_SCENARIO_PARAM_ALIAS: changeScenarioParamsAliasValue,
+  SET_TASK_MODE_ALIAS: setTaskModeAliasValue,
 };
