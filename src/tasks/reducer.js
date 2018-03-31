@@ -13,7 +13,7 @@ export function getInitialState() {
       { id: MANUAL_MODE, name: 'manual', active: true },
       { id: AUTOMATIC_MODE, name: 'automatic', active: false },
     ],
-    isEngaged: true,
+    isEngaged: false,
     tasks: [],
   });
 }
@@ -23,7 +23,7 @@ export function reduceTasks(state, response) {
 }
 
 export function setTaskMode(state, taskMode) {
-  const newModes = state.modes.map((mode) => {
+  const newModes = state.get('modes').map((mode) => {
     return mode.set('active', mode.get('id') === taskMode);
   });
   return state.set('modes', newModes);
@@ -52,10 +52,10 @@ export default function(state = getInitialState(), action) {
     case RECEIVE_TASKS:
       let newState = reduceTasks(state, action.response);
 
-      if (newState.get('list').size > 0 && !newState.set('isEngaged')) {
+      if (newState.get('tasks').size > 0 && !newState.get('isEngaged')) {
         //  we have some tasks and the extensions is not doing anything
         //  set tasks
-        newState = setTaskActive(state);
+        newState = setNextTaskActive(newState);
       }
 
       return newState;

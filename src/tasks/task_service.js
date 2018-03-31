@@ -1,4 +1,4 @@
-import { getTasks } from './action_creators';
+import { fetchTasks } from './action_creators';
 
 export const CHECK_INTERVAL = 1000;
 
@@ -6,7 +6,7 @@ let serviceInterval;
 let dispatch;
 
 export function checkTasks() {
-  dispatch(getTasks());
+  dispatch(fetchTasks());
 }
 
 export function startService(dispatchRef) {

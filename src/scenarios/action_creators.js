@@ -117,3 +117,15 @@ export function changeScenarioParam(scenarioId, param, value) {
   };
 }
 
+export function activeScenarioFromTask(task) {
+  console.log('activeScenarioFromTask', task);
+  return (dispatch) => {
+    //  change scenario
+    const scenarioId = task.getIn(['scenario', 'id']);
+    dispatch(changeScenario(scenarioId));
+
+    //  start scenario
+    dispatch(startScenario);
+  };
+}
+

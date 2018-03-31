@@ -9,6 +9,8 @@ import {
   SEARCH_YOUTUBE,
   CLICK_SEARCH_RESULT,
 } from './scenario_scripts';
+import { SET_TASK_MODE, MANUAL_MODE, AUTOMATIC_MODE }
+  from '../tasks/action_creators';
 
 export function reduceStopSession(state, response) {
   return state.map((session) => {
@@ -22,7 +24,7 @@ export function reduceStopSession(state, response) {
   });
 }
 
-export const SCENARIOS = [
+export const MANUAL_SCENARIOS = [
   {
     id: 1,
     name: 'Let it watch',
@@ -129,8 +131,54 @@ export const SCENARIOS = [
   },
 ];
 
+export const AUTOMATIC_SCENARIOS = [
+  {
+    id: 1,
+    name: 'Automatic Search on YouTube',
+    controls: ['searchInput'],
+    steps: [{
+      id: 1,
+      name: 'Go on YouTube',
+      duration: 1000,
+      script: GO_ON_YOUTUBE_SCRIPT,
+    }, {
+      id: 2,
+      name: 'Search YouTube',
+      duration: 2000,
+      script: SEARCH_YOUTUBE,
+      args: ['plane'],
+    }, {
+      id: 3,
+      name: 'Click first result',
+      duration: 3000,
+      script: CLICK_SEARCH_RESULT,
+      args: [0],
+    }, {
+      id: 4,
+      name: 'Watch next up video',
+      repeat: 10,
+      duration: 5000,
+      steps: [
+        {
+          id: 1,
+          name: 'Click next up video',
+          repeat: 0,
+          script: NEXT_VIDEO_SCRIPT,
+        },
+        {
+          id: 2,
+          name: 'Click skip add',
+          repeat: 0,
+          duration: 10000,
+          script: CLICK_SKIP_AD_SCRIPT,
+        },
+      ],
+    }],
+  },
+];
+
 export function getInitialState() {
-  let scenarios = fromJS(SCENARIOS);
+  let scenarios = fromJS(MANUAL_SCENARIOS);
 
   //   make the first scenario active by default
   scenarios = scenarios.map((scenario, i) => {
@@ -151,12 +199,24 @@ export function changeScenarioParam(state, action) {
   return state;
 }
 
+export function setTaskMode(state, taskMode) {
+  if (taskMode === AUTOMATIC_MODE) {
+    const scenarios = fromJS(AUTOMATIC_SCENARIOS);
+    return scenarios.map((s) => s.set('active', false));
+  }
+
+  return getInitialState();
+}
+
+
 export default function(state = getInitialState(), action) {
   switch (action.type) {
     case CHANGE_SCENARIO:
       return changeScenario(state, action.scenarioId);
     case CHANGE_SCENARIO_PARAM:
       return changeScenarioParam(state, action);
+    case SET_TASK_MODE:
+      return setTaskMode(state, action.taskMode);
     default:
       return state;
   }

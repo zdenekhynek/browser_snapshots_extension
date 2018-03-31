@@ -2,6 +2,27 @@ import * as dao from './dao.js';
 import { raiseError } from '../errors/action_creators';
 import { startService, stopService } from './task_service';
 import { getActivateAgent } from '../agents/utils';
+import { getActiveTask } from './utils';
+import { activeScenarioFromTask } from '../scenarios/action_creators';
+
+export function activateScenarioForTask(tasks, dispatch) {
+  console.log('activateScenarioForTask', tasks);
+
+  //  TODO - what is extension was switched to the manual mode
+  //  in the meantime
+  if (tasks.get('isEngaged')) {
+    //  no need to search for new ones
+    stopService();
+
+    const activeTask = getActiveTask(tasks);
+
+
+    if (activeTask) {
+      console.log('activating scenarion from task');
+      dispatch(activeScenarioFromTask(activeTask));
+    }
+  }
+}
 
 export const SET_TASK_MODE = 'SET_TASK_MODE';
 
@@ -39,7 +60,7 @@ export function receiveTasks(response) {
   };
 }
 
-export function getTasks() {
+export function fetchTasks() {
   return (dispatch, getState) => {
     console.log('dispatching get tasks');
     const { auth, agents } = getState();
@@ -49,9 +70,13 @@ export function getTasks() {
     const agentId = agent.get('id', 0);
 
     dispatch(requestTasks());
-    dao.getTasks(agentId, auth.get('token'))
+    dao.fetch(agentId, auth.get('token'))
       .then((response) => {
         dispatch(receiveTasks(response || {}));
+
+        //  do we need to update scenario
+        const { tasks } = getState();
+        activateScenarioForTask(tasks, dispatch);
       })
       .catch((error) => {
         console.error('Failed getting tasks'); //  eslint-disable-line no-console, max-len

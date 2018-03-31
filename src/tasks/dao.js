@@ -1,6 +1,6 @@
 import { daoFetch, formatUrl } from '../utils/dao_helpers';
 
-export function getTasks(agent, token) {
+export function fetch(agent, token) {
   const endpointUrl = 'tasks/';
 
   const method = 'GET';
