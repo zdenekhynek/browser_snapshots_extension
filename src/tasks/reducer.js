@@ -19,7 +19,22 @@ export function getInitialState() {
 }
 
 export function reduceTasks(state, response) {
-  return state.set('tasks', fromJS(response));
+  const existingTasks = state.get('tasks');
+  const newTasks = fromJS(response);
+
+  //  make sure we don't get duplicates
+  const tasks = newTasks.reduce((acc, task) => {
+    const itemExists = acc.find((t) => {
+      return t.get('id') === task.get('id');
+    });
+    if (!itemExists) {
+      return acc.push(task);
+    }
+
+    return acc;
+  }, existingTasks);
+
+  return state.set('tasks', tasks);
 }
 
 export function setTaskMode(state, modeId) {
