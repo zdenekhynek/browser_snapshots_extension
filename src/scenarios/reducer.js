@@ -9,7 +9,7 @@ import {
   SEARCH_YOUTUBE,
   CLICK_SEARCH_RESULT,
 } from './scenario_scripts';
-import { SET_TASK_MODE, MANUAL_MODE, AUTOMATIC_MODE }
+import { SET_TASK_MODE, AUTOMATIC_MODE }
   from '../tasks/action_creators';
 
 export function reduceStopSession(state, response) {
@@ -146,7 +146,7 @@ export const AUTOMATIC_SCENARIOS = [
       name: 'Search YouTube',
       duration: 2000,
       script: SEARCH_YOUTUBE,
-      args: ['plane'],
+      args: [],
     }, {
       id: 3,
       name: 'Click first result',
@@ -188,23 +188,43 @@ export function getInitialState() {
   return scenarios;
 }
 
+export function getAutomaticScenarios() {
+  const scenarios = fromJS(AUTOMATIC_SCENARIOS);
+  return scenarios.map((s) => s.set('active', false));
+}
+
 export function changeScenario(state, scenarioId) {
   return state.map((scenario) => {
     return scenario.set('active', scenario.get('id') === scenarioId);
   });
 }
 
-export function changeScenarioParam(state, action) {
-  console.log('changeScenarioParam', action);
-  return state;
+export function changeScenarioParam(state, scenarioId, params = {}) {
+  const { step, param, value } = params;
+
+  //  find scenario
+  const scenarioIndex = state.findIndex((s) => {
+    return s.get('id') === scenarioId;
+  });
+
+  //  find step
+  const stepIndex = state.getIn([scenarioIndex, 'steps']).findIndex((s) => {
+    return s.get('id') === step;
+  });
+
+  //  update step
+  return state
+    .updateIn([scenarioIndex, 'steps', stepIndex], (s) => {
+      return s.set(param, value);
+    });
 }
 
 export function setTaskMode(state, taskMode) {
   if (taskMode === AUTOMATIC_MODE) {
-    const scenarios = fromJS(AUTOMATIC_SCENARIOS);
-    return scenarios.map((s) => s.set('active', false));
+    return getAutomaticScenarios();
   }
 
+  //  manual mode
   return getInitialState();
 }
 
@@ -212,11 +232,18 @@ export function setTaskMode(state, taskMode) {
 export default function(state = getInitialState(), action) {
   switch (action.type) {
     case CHANGE_SCENARIO:
-      return changeScenario(state, action.scenarioId);
+      let newState = changeScenario(state, action.scenarioId);
+
+      //  are we changing value of a param as well
+      if (action.params) {
+        newState = changeScenarioParam(newState, action.scenarioId,
+          action.params);
+      }
+      return newState;
     case CHANGE_SCENARIO_PARAM:
       return changeScenarioParam(state, action);
     case SET_TASK_MODE:
-      return setTaskMode(state, action.taskMode);
+      return setTaskMode(state, action.mode);
     default:
       return state;
   }

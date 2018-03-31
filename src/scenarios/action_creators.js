@@ -1,4 +1,4 @@
-import { List } from 'immutable';
+import { List, Map } from 'immutable';
 
 import { getScriptById } from './scenario_scripts';
 import { executeScript } from '../utils/extension_utils';
@@ -25,10 +25,7 @@ export function executeStep(step, doneClb) {
   const scriptId = step.get('script');
   const scriptArgs = step.get('args', List()).toJS();
 
-  console.log('scriptId', scriptId, 'scriptArgs', scriptArgs, duration);
-
   const script = getScriptById(scriptId, scriptArgs);
-  console.log('script', script);
 
   //  if video has recursion
   if (step.has('steps')) {
@@ -102,10 +99,11 @@ export function stopScenario() {
   return { type: STOP_SCENARIO };
 }
 
-export function changeScenario(scenarioId) {
+export function changeScenario(scenarioId, params = null) {
   return {
     type: CHANGE_SCENARIO,
     scenarioId,
+    params,
   };
 }
 
@@ -117,15 +115,26 @@ export function changeScenarioParam(scenarioId, param, value) {
   };
 }
 
-export function activeScenarioFromTask(task) {
-  console.log('activeScenarioFromTask', task);
+export function activeScenarioFromTask(task = Map()) {
   return (dispatch) => {
+    //  TODO - now hardcoded for youtube search
     //  change scenario
-    const scenarioId = task.getIn(['scenario', 'id']);
-    dispatch(changeScenario(scenarioId));
+    const scenarioId = 1;
+    const step = 2;
+    const param = 'args';
+    const value = List([task.getIn(
+      ['scenario', 'config', 0, 'settings', 'keyword'],
+    )]);
+
+    //  change scenario with params
+    const params = { step, param, value };
+
+    dispatch(changeScenario(scenarioId, params));
 
     //  start scenario
-    dispatch(startScenario);
+    setTimeout(() => {
+      dispatch(startScenario());
+    }, 250);
   };
 }
 

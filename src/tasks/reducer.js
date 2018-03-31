@@ -22,9 +22,9 @@ export function reduceTasks(state, response) {
   return state.set('tasks', fromJS(response));
 }
 
-export function setTaskMode(state, taskMode) {
+export function setTaskMode(state, modeId) {
   const newModes = state.get('modes').map((mode) => {
-    return mode.set('active', mode.get('id') === taskMode);
+    return mode.set('active', mode.get('id') === modeId);
   });
   return state.set('modes', newModes);
 }
@@ -60,7 +60,7 @@ export default function(state = getInitialState(), action) {
 
       return newState;
     case SET_TASK_MODE:
-      return setTaskMode(state, action.taskMode);
+      return setTaskMode(state, action.mode);
     default:
       return state;
   }

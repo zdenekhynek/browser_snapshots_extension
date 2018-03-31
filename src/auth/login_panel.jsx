@@ -94,7 +94,8 @@ export default class LoginPanel extends React.Component {
     );
   }
 
-  renderScenarioDropdown(scenarios, activeScenario, sessionRunning) {
+  renderScenarioDropdown(scenarios, activeScenario = {},
+    sessionRunning = false) {
     const defaultValue = activeScenario.id;
     const disabled = !!sessionRunning;
 
@@ -117,7 +118,6 @@ export default class LoginPanel extends React.Component {
   }
 
   renderScenarioControl(control) {
-    console.log('control', control);
     if (control === 'searchInput') {
       return (
         <li><input name="search-input" /></li>
@@ -128,7 +128,7 @@ export default class LoginPanel extends React.Component {
   }
 
   renderScenarioControls(scenario) {
-    if (!scenario.controls) {
+    if (!scenario || !scenario.controls) {
       return null;
     }
 
