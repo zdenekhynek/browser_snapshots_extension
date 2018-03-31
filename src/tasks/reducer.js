@@ -1,4 +1,4 @@
-import { fromJS } from 'immutable';
+import { fromJS, List } from 'immutable';
 
 import {
   SET_TASK_MODE,
@@ -47,10 +47,16 @@ export function setNextTaskActive(state) {
   return setEngagement(newState, true);
 }
 
+export function clearTasks(state) {
+  return state.set('tasks', List());
+}
+
 export default function(state = getInitialState(), action) {
+  let newState;
+
   switch (action.type) {
     case RECEIVE_TASKS:
-      let newState = reduceTasks(state, action.response);
+      newState = reduceTasks(state, action.response);
 
       if (newState.get('tasks').size > 0 && !newState.get('isEngaged')) {
         //  we have some tasks and the extensions is not doing anything
@@ -60,7 +66,14 @@ export default function(state = getInitialState(), action) {
 
       return newState;
     case SET_TASK_MODE:
-      return setTaskMode(state, action.mode);
+      newState = setTaskMode(state, action.mode);
+
+      //  if manual mode, clear tasks
+      if (action.mode === MANUAL_MODE) {
+        newState = clearTasks(newState);
+      }
+
+      return newState;
     default:
       return state;
   }

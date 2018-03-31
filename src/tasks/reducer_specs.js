@@ -2,7 +2,12 @@
 import { expect } from 'chai';
 import { fromJS } from 'immutable';
 
-import { RECEIVE_TASKS, AUTOMATIC_MODE, MANUAL_MODE } from './action_creators';
+import {
+  RECEIVE_TASKS,
+  SET_TASK_MODE,
+  AUTOMATIC_MODE,
+  MANUAL_MODE,
+} from './action_creators';
 import reducer, { getInitialState, setTaskMode,
   setNextTaskActive } from './reducer';
 
@@ -59,6 +64,20 @@ describe('Tasks reducer', () => {
         expect(result.getIn(['tasks', 0, 'active'])).to.be.true;
         expect(result.getIn(['tasks', 1, 'active'])).to.be.false;
         expect(result.get('isEngaged')).to.be.true;
+      });
+    });
+
+    describe('SET_TASK_MODE', () => {
+      it('should clear tasks if switched to manual', () => {
+        const state = getInitialState();
+        const tasks = [{}, {}, {}];
+        let result = reducer(state, { type: RECEIVE_TASKS, response: tasks });
+        expect(result.get('tasks').size).to.eq(3);
+
+        result = reducer(result,
+          { type: SET_TASK_MODE, mode: MANUAL_MODE }
+        );
+        expect(result.get('tasks').size).to.eq(0);
       });
     });
   });
