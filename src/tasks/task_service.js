@@ -9,12 +9,15 @@ export function checkTasks() {
   dispatch(fetchTasks());
 }
 
-export function startService(dispatchRef) {
-  dispatch = dispatchRef;
-  serviceInterval = setInterval(checkTasks, CHECK_INTERVAL);
-}
-
-
 export function stopService() {
   clearInterval(serviceInterval);
+}
+
+export function startService(dispatchRef) {
+  dispatch = dispatchRef;
+
+  //  just in case the old is still runnig
+  stopService();
+
+  serviceInterval = setInterval(checkTasks, CHECK_INTERVAL);
 }

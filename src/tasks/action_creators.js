@@ -5,6 +5,15 @@ import { getActivateAgent } from '../agents/utils';
 import { getActiveTask } from './utils';
 import { activeScenarioFromTask } from '../scenarios/action_creators';
 
+export const SET_IS_ENGAGED = 'SET_IS_ENGAGED';
+
+export function setIsEngaged(isEngaged) {
+  return {
+    type: SET_IS_ENGAGED,
+    isEngaged,
+  };
+}
+
 export const CHANGE_TASK_STATUS = 'CHANGE_TASK_STATUS';
 
 export function changeTaskStatus(status) {
@@ -15,9 +24,21 @@ export function changeTaskStatus(status) {
     const activeTask = getActiveTask(tasks);
 
     if (activeTask) {
-      const taskId = activeTask.get('id');
-      dao.changeStatus(taskId, status, token);
+      const id = activeTask.get('id');
+      dao.changeStatus(id, status, token)
+        .then(() => {
+          dispatch({ type: CHANGE_TASK_STATUS, id, status });
+        })
+        .catch((error) => {
+          console.error('Failed changing task status'); //  eslint-disable-line no-console, max-len
+          console.error(error); //  eslint-disable-line no-console
+          dispatch(raiseError('Failed changing task status'));
+          return Promise.reject({ error });
+        });
     }
+
+    //  active tasks
+    dispatch({ type: '' });
   };
 }
 
@@ -33,12 +54,16 @@ export function activateScenarioForTask(tasks, dispatch) {
     const activeTask = getActiveTask(tasks);
 
     if (activeTask) {
-      console.log('activating scenarion from task');
       dispatch(activeScenarioFromTask(activeTask));
 
       // mark task as in progress
       dispatch(changeTaskStatus(2));
     }
+  } else {
+    //  there are not active tasks to work on
+    //  switch engagedment and start looking for new ones
+    dispatch(setIsEngaged(false));
+    startService(dispatch);
   }
 }
 
@@ -59,6 +84,14 @@ export function setTaskMode(mode) {
       type: SET_TASK_MODE,
       mode,
     });
+  };
+}
+
+export const SET_NEXT_TASK_ACTIVE = 'SET_NEXT_TASK_ACTIVE';
+
+export function setNextTaskActive() {
+  return {
+    type: SET_NEXT_TASK_ACTIVE,
   };
 }
 
@@ -92,8 +125,17 @@ export function fetchTasks() {
       .then((response) => {
         dispatch(receiveTasks(response || {}));
 
+        let tasks = getState().tasks;
+        console.log('tasks', tasks, response);
+        if (response.length > 0 && !tasks.get('isEngaged')) {
+          //  we have some new tasks and the extensions is not doing anything
+          //  active first task
+          dispatch(setNextTaskActive());
+        }
+
+        tasks = getState().tasks;
+
         //  do we need to update scenario
-        const { tasks } = getState();
         activateScenarioForTask(tasks, dispatch);
       })
       .catch((error) => {
@@ -105,10 +147,3 @@ export function fetchTasks() {
   };
 }
 
-export const SET_NEXT_TASK_ACTIVE = 'SET_NEXT_TASK_ACTIVE';
-
-export function setNextTaskActive() {
-  return {
-    type: SET_NEXT_TASK_ACTIVE,
-  };
-}

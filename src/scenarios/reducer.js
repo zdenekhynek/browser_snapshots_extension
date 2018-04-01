@@ -158,21 +158,7 @@ export const AUTOMATIC_SCENARIOS = [
       name: 'Watch next up video',
       repeat: 3,
       duration: 5000,
-      steps: [
-        {
-          id: 1,
-          name: 'Click next up video',
-          repeat: 0,
-          script: NEXT_VIDEO_SCRIPT,
-        },
-        {
-          id: 2,
-          name: 'Click skip add',
-          repeat: 0,
-          duration: 10000,
-          script: CLICK_SKIP_AD_SCRIPT,
-        },
-      ],
+      script: NEXT_VIDEO_SCRIPT,
     }],
   },
 ];

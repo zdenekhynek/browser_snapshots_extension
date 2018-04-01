@@ -1,9 +1,11 @@
 import { fromJS, List } from 'immutable';
 
 import {
+  SET_IS_ENGAGED,
   SET_TASK_MODE,
   RECEIVE_TASKS,
   SET_NEXT_TASK_ACTIVE,
+  CHANGE_TASK_STATUS,
   MANUAL_MODE,
   AUTOMATIC_MODE,
 } from './action_creators';
@@ -56,7 +58,17 @@ export function setNextTaskActive(state) {
   activeIndex++;
 
   newTasks = newTasks.map((t, i) => {
-    return t.set('active', i === activeIndex);
+    const isQueued = t.get('status') === 1;
+    const shouldBeActive = i === activeIndex;
+
+    //  is active
+    if (isQueued && shouldBeActive) {
+      return t.set('active', shouldBeActive);
+    } else if (shouldBeActive) {
+      activeIndex++;
+    }
+
+    return t.set('active', false);
   });
 
   const newState = state.set('tasks', newTasks);
@@ -70,19 +82,22 @@ export function clearTasks(state) {
   return state.set('tasks', List());
 }
 
+export function changeTaskStatus(state, id, status) {
+  const index = state.get('tasks').findIndex((t) => t.get('id') === id);
+
+  if (index > -1) {
+    return state.setIn(['tasks', index, 'status'], status);
+  }
+
+  return state;
+}
+
 export default function(state = getInitialState(), action) {
   let newState;
 
   switch (action.type) {
     case RECEIVE_TASKS:
       newState = reduceTasks(state, action.response);
-
-      if (newState.get('tasks').size > 0 && !newState.get('isEngaged')) {
-        //  we have some tasks and the extensions is not doing anything
-        //  set tasks
-        newState = setNextTaskActive(newState);
-      }
-
       return newState;
     case SET_TASK_MODE:
       newState = setTaskMode(state, action.mode);
@@ -95,6 +110,10 @@ export default function(state = getInitialState(), action) {
       return newState;
     case SET_NEXT_TASK_ACTIVE:
       return setNextTaskActive(state);
+    case SET_IS_ENGAGED:
+      return state.set('isEngaged', action.isEngaged);
+    case CHANGE_TASK_STATUS:
+      return changeTaskStatus(state, action.id, action.status);
     default:
       return state;
   }

@@ -2,7 +2,8 @@ import { List, Map } from 'immutable';
 
 import { getScriptById } from './scenario_scripts';
 import { executeScript } from '../utils/extension_utils';
-import { changeTaskStatus, setNextTaskActive } from '../tasks/action_creators';
+import { changeTaskStatus, setNextTaskActive,
+  activateScenarioForTask } from '../tasks/action_creators';
 
 export const STOP_SCENARIO = 'STOP_SCENARIO';
 export const START_SCENARIO = 'START_SCENARIO';
@@ -17,8 +18,8 @@ export function randomizeDuration(duration, randomness = 10) {
   return duration + random;
 }
 
-export function executeStep(step, doneClb) {
-  let duration = step.get('duration', 0);
+export function executeStep(step, doneClb, repeatIndex = 0) {
+  let duration = step.get('duration', -1);
   const randomness = step.get('randomness', 10);
   duration = randomizeDuration(duration, randomness);
 
@@ -28,48 +29,53 @@ export function executeStep(step, doneClb) {
 
   const script = getScriptById(scriptId, scriptArgs);
 
-  //  if video has recursion
-  if (step.has('steps')) {
-    executeSteps(step.get('steps')); // eslint-disable-line no-use-before-define, max-len
+  //  if step has recursion
+  // if (step.has('steps')) {
+  //   executeSteps(step.get('steps'), doneClb); // eslint-disable-line no-use-before-define, max-len
+  // }
+
+  //  is step just a wrapper
+  if (step.has('duration') || step.has('script')) {
+
+    console.log('duration', duration);
+
+    const timeout = setTimeout(() => {
+      console.log('called set timeout', script);
+      if (typeof script === 'string') {
+        //  script is a string which should be run on a page
+        executeScript(script);
+      } else if (script.hasOwnProperty('fn')) {
+        //  script is a function which calls extension API
+        script.fn.apply(this, script.args);
+      }
+
+      const newRepeatIndex = repeatIndex + 1;
+      console.log('repeat', repeat, repeatIndex);
+
+      if (repeat === -1 || newRepeatIndex <= repeat) {
+        executeStep(step, doneClb, newRepeatIndex);
+      } else {
+        console.log('calling done');
+        doneClb();
+      }
+    }, duration);
+
+    timeouts.push(timeout);
   }
-
-  let repeatIndex = 0;
-
-  const timeout = setTimeout(() => {
-    if (typeof script === 'string') {
-      //  script is a string which should be run on a page
-      executeScript(script);
-    } else if (script.hasOwnProperty('fn')) {
-      //  script is a function which calls extension API
-      script.fn.apply(this, script.args);
-    }
-
-    repeatIndex++;
-
-    if (repeat === -1 || repeatIndex <= repeat) {
-      executeStep(step, doneClb);
-    } else {
-      doneClb();
-    }
-  }, duration);
-
-  timeouts.push(timeout);
 }
 
-export function executeSteps(steps, dispatch) {
+export function executeSteps(steps, doneClb) {
+  console.log('executeSteps', doneClb);
   let stepIndex = 0;
   const nextStep = () => {
+    console.log('nextStep', stepIndex, steps.size);
     if (stepIndex < steps.size) {
       const step = steps.get(stepIndex);
       stepIndex++;
       executeStep(step, nextStep);
     } else {
-      console.log('steps finished');
-      //  activate next step
-      dispatch(setNextTaskActive());
-
-      //  complete existing task
-      dispatch(changeTaskStatus(4));
+      console.log('done with steps', doneClb);
+      doneClb();
     }
   };
 
@@ -93,7 +99,20 @@ export function startScenario() {
     });
 
     const steps = scenario.get('steps');
-    executeSteps(steps, dispatch);
+
+    const finishSteps = () => {
+      //  complete existing task
+      dispatch(changeTaskStatus(4));
+
+      //  activate next step
+      dispatch(setNextTaskActive());
+
+      //  check whether we can activate next scenario
+      const { tasks } = getState();
+      activateScenarioForTask(tasks, dispatch);
+    };
+
+    executeSteps(steps, finishSteps);
 
     dispatch({ type: START_SCENARIO });
   };
@@ -138,8 +157,6 @@ export function activeScenarioFromTask(task = Map()) {
     dispatch(changeScenario(scenarioId, params));
 
     //  start scenario
-    setTimeout(() => {
-      dispatch(startScenario());
-    }, 250);
+    dispatch(startScenario());
   };
 }
