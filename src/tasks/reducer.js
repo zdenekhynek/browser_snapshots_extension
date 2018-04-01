@@ -3,6 +3,7 @@ import { fromJS, List } from 'immutable';
 import {
   SET_TASK_MODE,
   RECEIVE_TASKS,
+  SET_NEXT_TASK_ACTIVE,
   MANUAL_MODE,
   AUTOMATIC_MODE,
 } from './action_creators';
@@ -59,7 +60,10 @@ export function setNextTaskActive(state) {
   });
 
   const newState = state.set('tasks', newTasks);
-  return setEngagement(newState, true);
+
+  //  find out if we have an active task
+  const isEngaged = (activeIndex < newTasks.size);
+  return setEngagement(newState, isEngaged);
 }
 
 export function clearTasks(state) {
@@ -89,6 +93,8 @@ export default function(state = getInitialState(), action) {
       }
 
       return newState;
+    case SET_NEXT_TASK_ACTIVE:
+      return setNextTaskActive(state);
     default:
       return state;
   }

@@ -5,6 +5,22 @@ import { getActivateAgent } from '../agents/utils';
 import { getActiveTask } from './utils';
 import { activeScenarioFromTask } from '../scenarios/action_creators';
 
+export const CHANGE_TASK_STATUS = 'CHANGE_TASK_STATUS';
+
+export function changeTaskStatus(status) {
+  return (dispatch, getState) => {
+    const { auth, tasks } = getState();
+    const token = auth.get('token');
+
+    const activeTask = getActiveTask(tasks);
+
+    if (activeTask) {
+      const taskId = activeTask.get('id');
+      dao.changeStatus(taskId, status, token);
+    }
+  };
+}
+
 export function activateScenarioForTask(tasks, dispatch) {
   console.log('activateScenarioForTask', tasks);
 
@@ -16,10 +32,12 @@ export function activateScenarioForTask(tasks, dispatch) {
 
     const activeTask = getActiveTask(tasks);
 
-
     if (activeTask) {
       console.log('activating scenarion from task');
       dispatch(activeScenarioFromTask(activeTask));
+
+      // mark task as in progress
+      dispatch(changeTaskStatus(2));
     }
   }
 }
@@ -62,15 +80,15 @@ export function receiveTasks(response) {
 
 export function fetchTasks() {
   return (dispatch, getState) => {
-    console.log('dispatching get tasks');
     const { auth, agents } = getState();
 
     //  get active agent
     const agent = getActivateAgent(agents);
     const agentId = agent.get('id', 0);
+    const token = auth.get('token');
 
     dispatch(requestTasks());
-    dao.fetch(agentId, auth.get('token'))
+    dao.fetch(agentId, token)
       .then((response) => {
         dispatch(receiveTasks(response || {}));
 
@@ -84,5 +102,13 @@ export function fetchTasks() {
         dispatch(raiseError('Failed getting tasks'));
         return Promise.reject({ error });
       });
+  };
+}
+
+export const SET_NEXT_TASK_ACTIVE = 'SET_NEXT_TASK_ACTIVE';
+
+export function setNextTaskActive() {
+  return {
+    type: SET_NEXT_TASK_ACTIVE,
   };
 }

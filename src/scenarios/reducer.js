@@ -156,7 +156,7 @@ export const AUTOMATIC_SCENARIOS = [
     }, {
       id: 4,
       name: 'Watch next up video',
-      repeat: 10,
+      repeat: 3,
       duration: 5000,
       steps: [
         {

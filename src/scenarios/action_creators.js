@@ -2,6 +2,7 @@ import { List, Map } from 'immutable';
 
 import { getScriptById } from './scenario_scripts';
 import { executeScript } from '../utils/extension_utils';
+import { changeTaskStatus, setNextTaskActive } from '../tasks/action_creators';
 
 export const STOP_SCENARIO = 'STOP_SCENARIO';
 export const START_SCENARIO = 'START_SCENARIO';
@@ -55,7 +56,7 @@ export function executeStep(step, doneClb) {
   timeouts.push(timeout);
 }
 
-export function executeSteps(steps) {
+export function executeSteps(steps, dispatch) {
   let stepIndex = 0;
   const nextStep = () => {
     if (stepIndex < steps.size) {
@@ -64,6 +65,11 @@ export function executeSteps(steps) {
       executeStep(step, nextStep);
     } else {
       console.log('steps finished');
+      //  activate next step
+      dispatch(setNextTaskActive());
+
+      //  complete existing task
+      dispatch(changeTaskStatus(4));
     }
   };
 
@@ -87,7 +93,7 @@ export function startScenario() {
     });
 
     const steps = scenario.get('steps');
-    executeSteps(steps);
+    executeSteps(steps, dispatch);
 
     dispatch({ type: START_SCENARIO });
   };
@@ -137,4 +143,3 @@ export function activeScenarioFromTask(task = Map()) {
     }, 250);
   };
 }
-
