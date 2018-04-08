@@ -49,7 +49,6 @@ export function reduceLogout(state) {
 }
 
 export default function(state = getInitialState(), action) {
-  console.log('state', state);
   switch (action.type) {
     case REQUEST_LOGIN:
       return state.set('isLogging', true);

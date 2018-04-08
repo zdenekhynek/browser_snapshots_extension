@@ -5,6 +5,7 @@ import {
   SET_TASK_MODE,
   RECEIVE_TASKS,
   SET_NEXT_TASK_ACTIVE,
+  SET_TASK_SESSION,
   CHANGE_TASK_STATUS,
   MANUAL_MODE,
   AUTOMATIC_MODE,
@@ -92,6 +93,17 @@ export function changeTaskStatus(state, id, status) {
   return state;
 }
 
+export function setTaskSession(state, id, sessionId) {
+  const index = state.get('tasks').findIndex((t) => t.get('id') === id);
+  console.log('setTaskSession', state, sessionId);
+
+  if (index > -1) {
+    return state.setIn(['tasks', index, 'session'], sessionId);
+  }
+
+  return state;
+}
+
 export default function(state = getInitialState(), action) {
   let newState;
 
@@ -114,6 +126,8 @@ export default function(state = getInitialState(), action) {
       return state.set('isEngaged', action.isEngaged);
     case CHANGE_TASK_STATUS:
       return changeTaskStatus(state, action.id, action.status);
+    case SET_TASK_SESSION:
+      return setTaskSession(state, action.id, action.sessionId);
     default:
       return state;
   }

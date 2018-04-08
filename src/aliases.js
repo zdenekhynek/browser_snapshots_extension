@@ -109,14 +109,15 @@ export function createSnapshotAliasValue(action) {
     action.url, action.sourceCode, action.image);
 }
 
-export function startScenarioAlias() {
+export function startScenarioAlias(sessionId) {
   return {
     type: START_SCENARIO_ALIAS,
+    sessionId,
   };
 }
 
-export function startScenarioAliasValue() {
-  return startScenario();
+export function startScenarioAliasValue(action) {
+  return startScenario(action.sessionId);
 }
 
 export function stopScenarioAlias() {

@@ -85,7 +85,7 @@ module.exports = {
 
     new webpack.DefinePlugin({
       API_URL: JSON.stringify('http://127.0.0.1:8000/'),
-      SNAP_INTERVAL: 1000,
+      SNAP_INTERVAL: 3000,
     }),
   ],
 };

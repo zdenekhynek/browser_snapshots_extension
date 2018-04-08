@@ -3,7 +3,8 @@ import { List, Map } from 'immutable';
 import { getScriptById } from './scenario_scripts';
 import { executeScript } from '../utils/extension_utils';
 import { changeTaskStatus, setNextTaskActive,
-  activateScenarioForTask } from '../tasks/action_creators';
+  activateScenarioForTask, setTaskSession } from '../tasks/action_creators';
+import { startSession, stopSession } from '../sessions/action_creators';
 
 export const STOP_SCENARIO = 'STOP_SCENARIO';
 export const START_SCENARIO = 'START_SCENARIO';
@@ -36,11 +37,7 @@ export function executeStep(step, doneClb, repeatIndex = 0) {
 
   //  is step just a wrapper
   if (step.has('duration') || step.has('script')) {
-
-    console.log('duration', duration);
-
     const timeout = setTimeout(() => {
-      console.log('called set timeout', script);
       if (typeof script === 'string') {
         //  script is a string which should be run on a page
         executeScript(script);
@@ -50,12 +47,10 @@ export function executeStep(step, doneClb, repeatIndex = 0) {
       }
 
       const newRepeatIndex = repeatIndex + 1;
-      console.log('repeat', repeat, repeatIndex);
 
       if (repeat === -1 || newRepeatIndex <= repeat) {
         executeStep(step, doneClb, newRepeatIndex);
       } else {
-        console.log('calling done');
         doneClb();
       }
     }, duration);
@@ -65,16 +60,13 @@ export function executeStep(step, doneClb, repeatIndex = 0) {
 }
 
 export function executeSteps(steps, doneClb) {
-  console.log('executeSteps', doneClb);
   let stepIndex = 0;
   const nextStep = () => {
-    console.log('nextStep', stepIndex, steps.size);
     if (stepIndex < steps.size) {
       const step = steps.get(stepIndex);
       stepIndex++;
       executeStep(step, nextStep);
     } else {
-      console.log('done with steps', doneClb);
       doneClb();
     }
   };
@@ -90,7 +82,7 @@ export function clearTimeouts() {
   timeouts = [];
 }
 
-export function startScenario() {
+export function startScenario(sessionId) {
   return (dispatch, getState) => {
     const { scenarios } = getState();
 
@@ -101,6 +93,9 @@ export function startScenario() {
     const steps = scenario.get('steps');
 
     const finishSteps = () => {
+      console.log('finishSteps');
+      dispatch(stopSession(sessionId));
+
       //  complete existing task
       dispatch(changeTaskStatus(4));
 
@@ -113,6 +108,12 @@ export function startScenario() {
     };
 
     executeSteps(steps, finishSteps);
+
+    console.log('getState().tasks.get("isEngaged")');
+    console.log(getState().tasks.get('isEngaged'));
+    if (getState().tasks.get('isEngaged')) {
+      dispatch(setTaskSession(sessionId));
+    }
 
     dispatch({ type: START_SCENARIO });
   };
@@ -157,6 +158,6 @@ export function activeScenarioFromTask(task = Map()) {
     dispatch(changeScenario(scenarioId, params));
 
     //  start scenario
-    dispatch(startScenario());
+    dispatch(startSession());
   };
 }

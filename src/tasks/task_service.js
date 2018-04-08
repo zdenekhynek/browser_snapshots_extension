@@ -16,7 +16,7 @@ export function stopService() {
 export function startService(dispatchRef) {
   dispatch = dispatchRef;
 
-  //  just in case the old is still runnig
+  //  just in case the old is still running
   stopService();
 
   serviceInterval = setInterval(checkTasks, CHECK_INTERVAL);

@@ -147,3 +147,34 @@ export function fetchTasks() {
   };
 }
 
+export const SET_TASK_SESSION = 'SET_TASK_SESSION';
+
+export function setTaskSession(sessionId) {
+  return (dispatch, getState) => {
+    console.log('setTaskSession');
+    const { auth, tasks } = getState();
+
+    const token = auth.get('token');
+
+    const activeTask = getActiveTask(tasks);
+    console.log('activeTask');
+    console.log(activeTask);
+
+    if (activeTask) {
+      console.log('fetch task session', token);
+      const id = activeTask.get('id');
+      dao.changeSessionId(id, sessionId, token)
+        .then(() => {
+          console.log('dispatch task session', sessionId);
+          dispatch({ type: SET_TASK_SESSION, sessionId });
+        })
+        .catch((error) => {
+          console.error('Failed changing task session id'); //  eslint-disable-line no-console, max-len
+          console.error(error); //  eslint-disable-line no-console
+          dispatch(raiseError('Failed changing task session'));
+          return Promise.reject({ error });
+        });
+    }
+  };
+}
+

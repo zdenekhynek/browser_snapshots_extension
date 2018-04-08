@@ -24,3 +24,14 @@ export function changeStatus(taskId, status, token) {
   const url = formatUrl(endpointUrl, taskId);
   return daoFetch(url, options, token);
 }
+
+export function changeSessionId(taskId, session, token) {
+  const endpointUrl = ENDPOINT_URL;
+
+  const method = 'PATCH';
+  const body = { session };
+  const options = { method, body };
+
+  const url = formatUrl(endpointUrl, taskId);
+  return daoFetch(url, options, token);
+}

@@ -94,7 +94,7 @@ export function startSession() {
           startInterval(dispatch, response.id, agentId, activeTabId,
             SNAP_INTERVAL);
 
-          dispatch(startScenarioAlias());
+          dispatch(startScenarioAlias(response.id));
         })
         .catch((error) => {
           console.error(error); //  eslint-disable-line no-console
