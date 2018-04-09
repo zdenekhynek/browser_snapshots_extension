@@ -17,6 +17,8 @@
     "tabs",
     "storage",
     "http://*/",
-    "https://*/"
+    "https://*/",
+    "<all_urls>",
+    "browsingData"
   ]
 }

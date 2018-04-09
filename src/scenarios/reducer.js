@@ -139,12 +139,12 @@ export const AUTOMATIC_SCENARIOS = [
     steps: [{
       id: 1,
       name: 'Go on YouTube',
-      duration: 1000,
+      duration: 2000,
       script: GO_ON_YOUTUBE_SCRIPT,
     }, {
       id: 2,
       name: 'Search YouTube',
-      duration: 2000,
+      duration: 3000,
       script: SEARCH_YOUTUBE,
       args: [],
     }, {
@@ -156,8 +156,8 @@ export const AUTOMATIC_SCENARIOS = [
     }, {
       id: 4,
       name: 'Watch next up video',
-      repeat: 3,
-      duration: 5000,
+      repeat: 10,
+      duration: 30000,
       script: NEXT_VIDEO_SCRIPT,
     }],
   },
