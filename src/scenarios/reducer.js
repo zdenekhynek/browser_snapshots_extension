@@ -4,6 +4,7 @@ import { CHANGE_SCENARIO, CHANGE_SCENARIO_PARAM } from './action_creators';
 import {
   CLICK_SKIP_AD_SCRIPT,
   NEXT_VIDEO_SCRIPT,
+  STOP_VIDEO_SCRIPT,
   CLEAR_CACHE_SCRIPT,
   GO_ON_YOUTUBE_SCRIPT,
   SEARCH_YOUTUBE,
@@ -159,6 +160,12 @@ export const AUTOMATIC_SCENARIOS = [
       repeat: 10,
       duration: 30000,
       script: NEXT_VIDEO_SCRIPT,
+    },
+    {
+      id: 5,
+      name: 'Stop video',
+      duration: 2000,
+      script: STOP_VIDEO_SCRIPT,
     }],
   },
 ];

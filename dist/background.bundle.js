@@ -5488,7 +5488,7 @@ function startSession() {
         response.recordedTabId = activeTabId;
         dispatch(receiveStartSession(response || {}));
 
-        startInterval(dispatch, response.id, agentId, activeTabId, 30000);
+        startInterval(dispatch, response.id, agentId, activeTabId, 1000);
 
         dispatch((0, _aliases.startScenarioAlias)(response.id));
       }).catch(function (error) {

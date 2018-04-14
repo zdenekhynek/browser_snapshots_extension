@@ -9,7 +9,8 @@ import { hideError } from './errors/action_creators';
 import { fetchAgentsAlias } from './aliases';
 import { navigateToUrl, clearCache, executeScript }
   from './utils/extension_utils';
-import { searchYoutube, clickSearchResult } from './scenarios/scenario_scripts';
+import { searchYoutube, clickSearchResult, stopVideoScript }
+  from './scenarios/scenario_scripts';
 
 import classes from './app.css';
 
@@ -55,17 +56,9 @@ export class App extends React.Component {
     );
   }
 
-  render() {
-    const { isAuthorized, errors } = this.props;
-
-    const renderedComponent = (isAuthorized) ?
-      this.renderPopup() : this.renderLogin();
-
-    const renderedErrors = (errors.displayedError) ?
-      this.renderError(errors) : null;
-
+  renderTestButtons() {
     return (
-      <div className={classes.app}>
+      <div>
         <button onClick={() => clearCache()}>Clear cache</button>
         <button onClick={() => navigateToUrl('http://youtube.com')}>
           Navigate to YT
@@ -76,6 +69,27 @@ export class App extends React.Component {
         <button onClick={() => executeScript(clickSearchResult(0))}>
           Click search
         </button>
+        <button onClick={() => executeScript(stopVideoScript())}>
+          Stop video script
+        </button>
+      </div>
+    );
+  }
+
+  render() {
+    const { isAuthorized, errors } = this.props;
+
+    const renderedComponent = (isAuthorized) ?
+      this.renderPopup() : this.renderLogin();
+
+    const renderedErrors = (errors.displayedError) ?
+      this.renderError(errors) : null;
+
+    const renderedTestButtons = this.renderTestButtons();
+
+    return (
+      <div className={classes.app}>
+        {renderedTestButtons}
         {renderedComponent}
         {renderedErrors}
       </div>

@@ -19,6 +19,16 @@ export function nextVideoScript() {
   return selector + click;
 }
 
+export const STOP_VIDEO_SCRIPT = 'STOP_VIDEO_SCRIPT';
+
+export function stopVideoScript() {
+  let selector = 'document.querySelector("#ytd-player")';
+  selector += '.querySelector(".ytp-play-button.ytp-button")';
+  const click = '.click()';
+
+  return selector + click;
+}
+
 export const CLICK_SKIP_AD_SCRIPT = 'CLICK_SKIP_AD_SCRIPT';
 
 export function clickSkipAdScript() {
@@ -75,6 +85,7 @@ export function clickSearchResult(index) {
 export const SCRIPTS = {
   [ALERT_SCRIPT]: alertScript,
   [NEXT_VIDEO_SCRIPT]: nextVideoScript,
+  [STOP_VIDEO_SCRIPT]: stopVideoScript,
   [CLICK_SKIP_AD_SCRIPT]: clickSkipAdScript,
   [CLEAR_CACHE_SCRIPT]: clearCacheScript,
   [GO_ON_YOUTUBE_SCRIPT]: goOnYotubeScript,
