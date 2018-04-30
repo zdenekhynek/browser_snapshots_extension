@@ -10,7 +10,7 @@ import {
   SEARCH_YOUTUBE,
   CLICK_SEARCH_RESULT,
 } from './scenario_scripts';
-import { SET_TASK_MODE, AUTOMATIC_MODE }
+import { SET_TASK_MODE, AUTOMATIC_MODE, AUTOMATIC_MODE_RACE }
   from '../tasks/action_creators';
 
 export function reduceStopSession(state, response) {
@@ -168,6 +168,41 @@ export const AUTOMATIC_SCENARIOS = [
       script: STOP_VIDEO_SCRIPT,
     }],
   },
+  {
+    id: 2,
+    name: 'Automatic Race Search on YouTube',
+    controls: ['searchInput'],
+    steps: [{
+      id: 1,
+      name: 'Go on YouTube',
+      duration: 2000,
+      script: GO_ON_YOUTUBE_SCRIPT,
+    }, {
+      id: 2,
+      name: 'Search YouTube',
+      duration: 3000,
+      script: SEARCH_YOUTUBE,
+      args: [],
+    }, {
+      id: 3,
+      name: 'Click first result',
+      duration: 3000,
+      script: CLICK_SEARCH_RESULT,
+      args: [0],
+    }, {
+      id: 4,
+      name: 'Watch next up video',
+      repeat: 10,
+      duration: 5000,
+      script: NEXT_VIDEO_SCRIPT,
+    },
+    {
+      id: 5,
+      name: 'Stop video',
+      duration: 2000,
+      script: STOP_VIDEO_SCRIPT,
+    }],
+  },
 ];
 
 export function getInitialState() {
@@ -213,7 +248,7 @@ export function changeScenarioParam(state, scenarioId, params = {}) {
 }
 
 export function setTaskMode(state, taskMode) {
-  if (taskMode === AUTOMATIC_MODE) {
+  if (taskMode === AUTOMATIC_MODE || taskMode === AUTOMATIC_MODE_RACE) {
     return getAutomaticScenarios();
   }
 

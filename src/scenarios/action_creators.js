@@ -93,7 +93,6 @@ export function startScenario(sessionId) {
     const steps = scenario.get('steps');
 
     const finishSteps = () => {
-      console.log('finishSteps');
       dispatch(stopSession(sessionId));
 
       //  complete existing task
@@ -109,8 +108,6 @@ export function startScenario(sessionId) {
 
     executeSteps(steps, finishSteps);
 
-    console.log('getState().tasks.get("isEngaged")');
-    console.log(getState().tasks.get('isEngaged'));
     if (getState().tasks.get('isEngaged')) {
       dispatch(setTaskSession(sessionId));
     }
@@ -141,11 +138,11 @@ export function changeScenarioParam(scenarioId, param, value) {
   };
 }
 
-export function activeScenarioFromTask(task = Map()) {
+export function activateScenarioFromTask(task = Map()) {
   return (dispatch) => {
-    //  TODO - now hardcoded for youtube search
-    //  change scenario
-    const scenarioId = 1;
+    //  pick scenario id: 1 for race, and scenario id: 2 for training
+    const scenarioId = (task.get('type') === 1) ? 2 : 1;
+
     const step = 2;
     const param = 'args';
     const value = List([task.getIn(

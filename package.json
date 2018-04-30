@@ -9,7 +9,8 @@
     "build:staging": "NODE_ENV=production webpack --config webpack.staging.config.js",
     "watch": "NODE_ENV=development webpack --watch",
     "lint": "eslint --ext .js --ext .jsx ./",
-    "test": "NODE_ENV=development mocha ./src/**/*_specs.js --opts .mocharc",
+    "test": "NODE_ENV=test mocha ./src/**/*_specs.js --opts .mocharc",
+    "test:file": "NODE_PATH=. NODE_ENV=test mocha --opts .mocharc",
     "test:watch": "npm run test -- --watch"
   },
   "repository": {

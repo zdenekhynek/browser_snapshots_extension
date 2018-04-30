@@ -9,6 +9,7 @@ import {
   CHANGE_TASK_STATUS,
   MANUAL_MODE,
   AUTOMATIC_MODE,
+  AUTOMATIC_MODE_RACE,
 } from './action_creators';
 
 export function getInitialState() {
@@ -16,6 +17,7 @@ export function getInitialState() {
     modes: [
       { id: MANUAL_MODE, name: 'manual', active: true },
       { id: AUTOMATIC_MODE, name: 'automatic', active: false },
+      { id: AUTOMATIC_MODE_RACE, name: 'automatic race', active: false },
     ],
     isEngaged: false,
     tasks: [],
@@ -53,6 +55,7 @@ export function setEngagement(state, isEngaged) {
 }
 
 export function setNextTaskActive(state) {
+  console.log('setNextTaskActive');
   let newTasks = state.get('tasks');
 
   let activeIndex = newTasks.findIndex((t) => t.get('active', false));
@@ -85,7 +88,6 @@ export function clearTasks(state) {
 
 export function changeTaskStatus(state, id, status) {
   const index = state.get('tasks').findIndex((t) => t.get('id') === id);
-
   if (index > -1) {
     return state.setIn(['tasks', index, 'status'], status);
   }
@@ -95,8 +97,6 @@ export function changeTaskStatus(state, id, status) {
 
 export function setTaskSession(state, id, sessionId) {
   const index = state.get('tasks').findIndex((t) => t.get('id') === id);
-  console.log('setTaskSession', state, sessionId);
-
   if (index > -1) {
     return state.setIn(['tasks', index, 'session'], sessionId);
   }

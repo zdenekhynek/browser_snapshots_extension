@@ -84,7 +84,7 @@ module.exports = {
     ]),
 
     new webpack.DefinePlugin({
-      API_URL: JSON.stringify('https://browser-snapshots.herokuapp.com/'),
+      API_URL: JSON.stringify('http://sn7257truedatyoutub-production.eu-west-1.elasticbeanstalk.com/'),
       SNAP_INTERVAL: 30000,
     }),
   ],

@@ -5,7 +5,7 @@ import { fromJS, List, Map } from 'immutable';
 
 import {
   CHANGE_SCENARIO,
-  activeScenarioFromTask,
+  activateScenarioFromTask,
   executeStep,
   executeSteps,
 } from './action_creators';
@@ -19,6 +19,10 @@ describe('Scenarios action creators', () => {
     beforeEach(() => {
       doneSpy = sinon.spy();
       clock = sinon.useFakeTimers();
+    });
+
+    afterEach(() => {
+      clock.restore();
     });
 
     it('should call done in a defined interval', () => {
@@ -54,6 +58,10 @@ describe('Scenarios action creators', () => {
       clock = sinon.useFakeTimers();
     });
 
+    afterEach(() => {
+      clock.restore();
+    });
+
     it('should call done for nested intervals', () => {
       const steps = fromJS(AUTOMATIC_SCENARIOS).getIn([0, 'steps']);
       executeSteps(steps, doneSpy);
@@ -63,7 +71,7 @@ describe('Scenarios action creators', () => {
     });
   });
 
-  describe('activeScenarioFromTask', () => {
+  describe('activateScenarioFromTask', () => {
     it('should activate scenario based on task', (done) => {
       const dispatchSpy = sinon.spy();
       const task = fromJS({
@@ -82,7 +90,7 @@ describe('Scenarios action creators', () => {
           ],
         },
       });
-      const promise = activeScenarioFromTask(task)(dispatchSpy);
+      const promise = activateScenarioFromTask(task)(dispatchSpy);
 
       Promise.resolve(promise).then(() => {
         const scenarioArgs = dispatchSpy.args[0][0];

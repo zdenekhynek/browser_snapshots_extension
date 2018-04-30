@@ -14,7 +14,8 @@ const finalCreateStore = compose(
   applyMiddleware(
     alias(aliases),
     thunk,
-    logger,
+
+//    logger,
   )
 )(createStore);
 

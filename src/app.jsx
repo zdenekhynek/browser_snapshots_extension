@@ -85,7 +85,7 @@ export class App extends React.Component {
     const renderedErrors = (errors.displayedError) ?
       this.renderError(errors) : null;
 
-    const renderedTestButtons = this.renderTestButtons();
+    const renderedTestButtons = null; //  this.renderTestButtons();
 
     return (
       <div className={classes.app}>
@@ -106,7 +106,6 @@ App.propTypes = {
 
 export function mapStateToProps({ auth, agents, errors }) { // ownProps
   const isAuthorized = !!auth.isAuthorized;
-  console.log('errors', errors);
   return { isAuthorized, errors, agents };
 }
 

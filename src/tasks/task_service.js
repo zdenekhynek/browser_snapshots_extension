@@ -6,6 +6,7 @@ let serviceInterval;
 let dispatch;
 
 export function checkTasks() {
+  //  select type of task to fetch
   dispatch(fetchTasks());
 }
 
@@ -20,4 +21,7 @@ export function startService(dispatchRef) {
   stopService();
 
   serviceInterval = setInterval(checkTasks, CHECK_INTERVAL);
+
+  //  check for tasks immediatelly
+  checkTasks();
 }

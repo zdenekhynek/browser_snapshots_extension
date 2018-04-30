@@ -162,7 +162,6 @@ export function setTaskModeAlias(taskMode) {
 }
 
 export function setTaskModeAliasValue(action) {
-  console.log('setTaskModeAliasValue', action);
   return setTaskMode(action.taskMode);
 }
 

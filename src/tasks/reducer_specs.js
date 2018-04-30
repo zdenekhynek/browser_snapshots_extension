@@ -89,7 +89,7 @@ describe('Tasks reducer', () => {
 
       it('it merges new tasks with the existing tasks', () => {
         const state = getInitialState();
-        let tasks = [{ id: 1 }, { id: 2 }, { id: 3 }];
+        let tasks = [{ id: 1 }, { id: 2, active: true }, { id: 3 }];
 
         let result = reducer(state, { type: RECEIVE_TASKS, response: tasks });
         expect(result.get('tasks').size).to.equal(3);
@@ -98,6 +98,7 @@ describe('Tasks reducer', () => {
         result = reducer(result, { type: RECEIVE_TASKS, response: tasks });
 
         expect(result.get('tasks').size).to.equal(4);
+        expect(result.getIn(['tasks', 1, 'active'])).to.be.true;
       });
     });
 

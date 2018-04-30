@@ -5550,7 +5550,7 @@ function stopSession(sessionId, end) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.SET_TASK_SESSION = exports.RECEIVE_TASKS = exports.REQUEST_TASKS = exports.SET_NEXT_TASK_ACTIVE = exports.MANUAL_MODE = exports.AUTOMATIC_MODE = exports.SET_TASK_MODE = exports.CHANGE_TASK_STATUS = exports.SET_IS_ENGAGED = undefined;
+exports.SET_TASK_SESSION = exports.RECEIVE_TASKS = exports.REQUEST_TASKS = exports.SET_NEXT_TASK_ACTIVE = exports.MANUAL_MODE = exports.AUTOMATIC_MODE_RACE = exports.AUTOMATIC_MODE = exports.SET_TASK_MODE = exports.CHANGE_TASK_STATUS = exports.SET_IS_ENGAGED = undefined;
 exports.setIsEngaged = setIsEngaged;
 exports.changeTaskStatus = changeTaskStatus;
 exports.activateScenarioForTask = activateScenarioForTask;
@@ -5560,6 +5560,8 @@ exports.requestTasks = requestTasks;
 exports.receiveTasks = receiveTasks;
 exports.fetchTasks = fetchTasks;
 exports.setTaskSession = setTaskSession;
+
+var _immutable = __webpack_require__(2);
 
 var _dao = __webpack_require__(110);
 
@@ -5643,11 +5645,12 @@ function activateScenarioForTask(tasks, dispatch) {
 var SET_TASK_MODE = exports.SET_TASK_MODE = 'SET_TASK_MODE';
 
 var AUTOMATIC_MODE = exports.AUTOMATIC_MODE = 'AUTOMATIC_MODE';
+var AUTOMATIC_MODE_RACE = exports.AUTOMATIC_MODE_RACE = 'AUTOMATIC_MODE_RACE';
 var MANUAL_MODE = exports.MANUAL_MODE = 'MANUAL_MODE';
 
 function setTaskMode(mode) {
   return function (dispatch) {
-    if (mode === AUTOMATIC_MODE) {
+    if (mode === AUTOMATIC_MODE || mode === AUTOMATIC_MODE_RACE) {
       (0, _task_service.startService)(dispatch);
     } else {
       (0, _task_service.stopService)();
@@ -5697,8 +5700,15 @@ function fetchTasks() {
     var agentId = agent.get('id', 0);
     var token = auth.get('token');
 
+    //  find out which type of tasks to fetch
+    var modes = getState().tasks.get('modes');
+    var activeMode = modes.find(function (m) {
+      return m.get('active');
+    }, null, (0, _immutable.Map)());
+    var type = activeMode.get('id') === AUTOMATIC_MODE_RACE ? 1 : 2;
+
     dispatch(requestTasks());
-    dao.fetch(agentId, token).then(function (response) {
+    dao.fetch(agentId, token, type).then(function (response) {
       dispatch(receiveTasks(response || {}));
 
       var tasks = getState().tasks;
@@ -6621,15 +6631,21 @@ function activeScenarioFromTask() {
   var task = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : (0, _immutable.Map)();
 
   return function (dispatch) {
-    //  TODO - now hardcoded for youtube search
-    //  change scenario
-    var scenarioId = 1;
+    console.log('activeScenarioFromTask task', task);
+
+    //  pick scenario id: 1 for race, and scenario id: 2 for training
+    var scenarioId = task.get('type') === 1 ? 2 : 1;
+
     var step = 2;
     var param = 'args';
     var value = (0, _immutable.List)([task.getIn(['scenario', 'config', 0, 'settings', 'keyword'])]);
 
     //  change scenario with params
     var params = { step: step, param: param, value: value };
+
+    console.log('scenarioId', scenarioId);
+    console.log('value', value);
+    console.log('params', params);
 
     dispatch(changeScenario(scenarioId, params));
 
@@ -7546,12 +7562,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.SCRIPTS = exports.CLICK_SEARCH_RESULT = exports.SEARCH_YOUTUBE = exports.GO_ON_YOUTUBE_SCRIPT = exports.CLEAR_CACHE_SCRIPT = exports.CLICK_SKIP_AD_SCRIPT = exports.NEXT_VIDEO_SCRIPT = exports.ALERT_SCRIPT = undefined;
+exports.SCRIPTS = exports.CLICK_SEARCH_RESULT = exports.SEARCH_YOUTUBE = exports.GO_ON_YOUTUBE_SCRIPT = exports.CLEAR_CACHE_SCRIPT = exports.CLICK_SKIP_AD_SCRIPT = exports.STOP_VIDEO_SCRIPT = exports.NEXT_VIDEO_SCRIPT = exports.ALERT_SCRIPT = undefined;
 
 var _SCRIPTS;
 
 exports.alertScript = alertScript;
 exports.nextVideoScript = nextVideoScript;
+exports.stopVideoScript = stopVideoScript;
 exports.clickSkipAdScript = clickSkipAdScript;
 exports.clearCacheScript = clearCacheScript;
 exports.goOnYotubeScript = goOnYotubeScript;
@@ -7584,6 +7601,16 @@ function nextVideoScript() {
   var selector = 'document.querySelector("ytd-compact-autoplay-renderer")';
   selector += '.querySelector("ytd-compact-video-renderer")';
   selector += '.querySelector("a")';
+  var click = '.click()';
+
+  return selector + click;
+}
+
+var STOP_VIDEO_SCRIPT = exports.STOP_VIDEO_SCRIPT = 'STOP_VIDEO_SCRIPT';
+
+function stopVideoScript() {
+  var selector = 'document.querySelector("#ytd-player")';
+  selector += '.querySelector(".ytp-play-button.ytp-button")';
   var click = '.click()';
 
   return selector + click;
@@ -7642,7 +7669,7 @@ function clickSearchResult(index) {
   return script;
 }
 
-var SCRIPTS = exports.SCRIPTS = (_SCRIPTS = {}, _defineProperty(_SCRIPTS, ALERT_SCRIPT, alertScript), _defineProperty(_SCRIPTS, NEXT_VIDEO_SCRIPT, nextVideoScript), _defineProperty(_SCRIPTS, CLICK_SKIP_AD_SCRIPT, clickSkipAdScript), _defineProperty(_SCRIPTS, CLEAR_CACHE_SCRIPT, clearCacheScript), _defineProperty(_SCRIPTS, GO_ON_YOUTUBE_SCRIPT, goOnYotubeScript), _defineProperty(_SCRIPTS, SEARCH_YOUTUBE, searchYoutube), _defineProperty(_SCRIPTS, CLICK_SEARCH_RESULT, clickSearchResult), _SCRIPTS);
+var SCRIPTS = exports.SCRIPTS = (_SCRIPTS = {}, _defineProperty(_SCRIPTS, ALERT_SCRIPT, alertScript), _defineProperty(_SCRIPTS, NEXT_VIDEO_SCRIPT, nextVideoScript), _defineProperty(_SCRIPTS, STOP_VIDEO_SCRIPT, stopVideoScript), _defineProperty(_SCRIPTS, CLICK_SKIP_AD_SCRIPT, clickSkipAdScript), _defineProperty(_SCRIPTS, CLEAR_CACHE_SCRIPT, clearCacheScript), _defineProperty(_SCRIPTS, GO_ON_YOUTUBE_SCRIPT, goOnYotubeScript), _defineProperty(_SCRIPTS, SEARCH_YOUTUBE, searchYoutube), _defineProperty(_SCRIPTS, CLICK_SEARCH_RESULT, clickSearchResult), _SCRIPTS);
 
 function noOpScript() {
   return '';
@@ -10190,14 +10217,21 @@ var _dao_helpers = __webpack_require__(5);
 var ENDPOINT_URL = exports.ENDPOINT_URL = 'tasks/';
 
 function fetch(agent, token) {
+  var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
   //  always get queud up
   var status = 1;
   var endpointUrl = ENDPOINT_URL;
 
   var method = 'GET';
   var options = { method: method };
+  var params = { agent: agent, status: status };
 
-  var formattedUrl = (0, _dao_helpers.formatUrl)(endpointUrl, null, { agent: agent, status: status });
+  if (type) {
+    params.type = type;
+  }
+
+  var formattedUrl = (0, _dao_helpers.formatUrl)(endpointUrl, null, params);
   return (0, _dao_helpers.daoFetch)(formattedUrl, options, token);
 }
 
@@ -10246,6 +10280,7 @@ var serviceInterval = void 0;
 var dispatch = void 0;
 
 function checkTasks() {
+  //  select type of task to fetch
   dispatch((0, _action_creators.fetchTasks)());
 }
 
@@ -10260,6 +10295,7 @@ function startService(dispatchRef) {
   stopService();
 
   serviceInterval = setInterval(checkTasks, CHECK_INTERVAL);
+  checkTasks();
 }
 
 /***/ }),
@@ -10973,6 +11009,44 @@ var AUTOMATIC_SCENARIOS = exports.AUTOMATIC_SCENARIOS = [{
     repeat: 10,
     duration: 30000,
     script: _scenario_scripts.NEXT_VIDEO_SCRIPT
+  }, {
+    id: 5,
+    name: 'Stop video',
+    duration: 2000,
+    script: _scenario_scripts.STOP_VIDEO_SCRIPT
+  }]
+}, {
+  id: 2,
+  name: 'Automatic Race Search on YouTube',
+  controls: ['searchInput'],
+  steps: [{
+    id: 1,
+    name: 'Go on YouTube',
+    duration: 2000,
+    script: _scenario_scripts.GO_ON_YOUTUBE_SCRIPT
+  }, {
+    id: 2,
+    name: 'Search YouTube',
+    duration: 3000,
+    script: _scenario_scripts.SEARCH_YOUTUBE,
+    args: []
+  }, {
+    id: 3,
+    name: 'Click first result',
+    duration: 3000,
+    script: _scenario_scripts.CLICK_SEARCH_RESULT,
+    args: [0]
+  }, {
+    id: 4,
+    name: 'Watch next up video',
+    repeat: 10,
+    duration: 5000,
+    script: _scenario_scripts.NEXT_VIDEO_SCRIPT
+  }, {
+    id: 5,
+    name: 'Stop video',
+    duration: 2000,
+    script: _scenario_scripts.STOP_VIDEO_SCRIPT
   }]
 }];
 
@@ -11024,7 +11098,7 @@ function changeScenarioParam(state, scenarioId) {
 }
 
 function setTaskMode(state, taskMode) {
-  if (taskMode === _action_creators2.AUTOMATIC_MODE) {
+  if (taskMode === _action_creators2.AUTOMATIC_MODE || taskMode === _action_creators2.AUTOMATIC_MODE_RACE) {
     return getAutomaticScenarios();
   }
 
@@ -11177,7 +11251,7 @@ var _action_creators = __webpack_require__(9);
 
 function getInitialState() {
   return (0, _immutable.fromJS)({
-    modes: [{ id: _action_creators.MANUAL_MODE, name: 'manual', active: true }, { id: _action_creators.AUTOMATIC_MODE, name: 'automatic', active: false }],
+    modes: [{ id: _action_creators.MANUAL_MODE, name: 'manual', active: true }, { id: _action_creators.AUTOMATIC_MODE, name: 'automatic', active: false }, { id: _action_creators.AUTOMATIC_MODE_RACE, name: 'automatic race', active: false }],
     isEngaged: false,
     tasks: []
   });

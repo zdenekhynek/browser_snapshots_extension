@@ -2,15 +2,20 @@ import { daoFetch, formatUrl } from '../utils/dao_helpers';
 
 export const ENDPOINT_URL = 'tasks/';
 
-export function fetch(agent, token) {
+export function fetch(agent, token, type = null) {
   //  always get queud up
   const status = 1;
   const endpointUrl = ENDPOINT_URL;
 
   const method = 'GET';
   const options = { method };
+  const params = { agent, status };
 
-  const formattedUrl = formatUrl(endpointUrl, null, { agent, status });
+  if (type) {
+    params.type = type;
+  }
+
+  const formattedUrl = formatUrl(endpointUrl, null, params);
   return daoFetch(formattedUrl, options, token);
 }
 

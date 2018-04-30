@@ -32,7 +32,6 @@ export default class LoginPanel extends React.Component {
   }
 
   onSearchInputChange(evt) {
-    console.log('onSearchInputChange', evt);
     this.props.onScenarioParamChange('searchInput', +evt.target.value);
   }
 

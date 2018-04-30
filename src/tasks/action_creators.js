@@ -1,9 +1,11 @@
+import { Map } from 'immutable';
+
 import * as dao from './dao.js';
 import { raiseError } from '../errors/action_creators';
 import { startService, stopService } from './task_service';
 import { getActivateAgent } from '../agents/utils';
 import { getActiveTask } from './utils';
-import { activeScenarioFromTask } from '../scenarios/action_creators';
+import { activateScenarioFromTask } from '../scenarios/action_creators';
 
 export const SET_IS_ENGAGED = 'SET_IS_ENGAGED';
 
@@ -43,8 +45,6 @@ export function changeTaskStatus(status) {
 }
 
 export function activateScenarioForTask(tasks, dispatch) {
-  console.log('activateScenarioForTask', tasks);
-
   //  TODO - what is extension was switched to the manual mode
   //  in the meantime
   if (tasks.get('isEngaged')) {
@@ -54,7 +54,7 @@ export function activateScenarioForTask(tasks, dispatch) {
     const activeTask = getActiveTask(tasks);
 
     if (activeTask) {
-      dispatch(activeScenarioFromTask(activeTask));
+      dispatch(activateScenarioFromTask(activeTask));
 
       // mark task as in progress
       dispatch(changeTaskStatus(2));
@@ -70,20 +70,24 @@ export function activateScenarioForTask(tasks, dispatch) {
 export const SET_TASK_MODE = 'SET_TASK_MODE';
 
 export const AUTOMATIC_MODE = 'AUTOMATIC_MODE';
+export const AUTOMATIC_MODE_RACE = 'AUTOMATIC_MODE_RACE';
 export const MANUAL_MODE = 'MANUAL_MODE';
 
-export function setTaskMode(mode) {
+//  for tests shouldStartService flag
+export function setTaskMode(mode, shouldStartService = true) {
   return (dispatch) => {
-    if (mode === AUTOMATIC_MODE) {
-      startService(dispatch);
-    } else {
-      stopService();
-    }
-
     dispatch({
       type: SET_TASK_MODE,
       mode,
     });
+
+    if (shouldStartService) {
+      if (mode === AUTOMATIC_MODE || mode === AUTOMATIC_MODE_RACE) {
+        startService(dispatch);
+      } else {
+        stopService();
+      }
+    }
   };
 }
 
@@ -120,23 +124,27 @@ export function fetchTasks() {
     const agentId = agent.get('id', 0);
     const token = auth.get('token');
 
+    //  find out which type of tasks to fetch
+    const modes = getState().tasks.get('modes');
+    const activeMode = modes.find((m) => m.get('active'), null, Map());
+    const type = (activeMode.get('id') === AUTOMATIC_MODE_RACE) ? 1 : 2;
+
     dispatch(requestTasks());
-    dao.fetch(agentId, token)
+    dao.fetch(agentId, token, type)
       .then((response) => {
         dispatch(receiveTasks(response || {}));
 
         let tasks = getState().tasks;
-        console.log('tasks', tasks, response);
         if (response.length > 0 && !tasks.get('isEngaged')) {
           //  we have some new tasks and the extensions is not doing anything
           //  active first task
           dispatch(setNextTaskActive());
+
+          tasks = getState().tasks;
+
+          //  do we need to update scenario
+          activateScenarioForTask(tasks, dispatch);
         }
-
-        tasks = getState().tasks;
-
-        //  do we need to update scenario
-        activateScenarioForTask(tasks, dispatch);
       })
       .catch((error) => {
         console.error('Failed getting tasks'); //  eslint-disable-line no-console, max-len
@@ -151,21 +159,16 @@ export const SET_TASK_SESSION = 'SET_TASK_SESSION';
 
 export function setTaskSession(sessionId) {
   return (dispatch, getState) => {
-    console.log('setTaskSession');
     const { auth, tasks } = getState();
 
     const token = auth.get('token');
 
     const activeTask = getActiveTask(tasks);
-    console.log('activeTask');
-    console.log(activeTask);
 
     if (activeTask) {
-      console.log('fetch task session', token);
       const id = activeTask.get('id');
       dao.changeSessionId(id, sessionId, token)
         .then(() => {
-          console.log('dispatch task session', sessionId);
           dispatch({ type: SET_TASK_SESSION, sessionId });
         })
         .catch((error) => {

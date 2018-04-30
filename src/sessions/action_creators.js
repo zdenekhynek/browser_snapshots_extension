@@ -98,7 +98,7 @@ export function startSession() {
         })
         .catch((error) => {
           console.error(error); //  eslint-disable-line no-console
-          dispatch(raiseError('Failed starting session'));
+          dispatch(raiseError(`Failed starting session:${error}`));
           return Promise.reject({ error });
         });
     }).catch();
