@@ -9,18 +9,47 @@ import {
   REQUEST_TASKS,
   RECEIVE_TASKS,
   SET_TASK_MODE,
+  MANUAL_MODE,
   AUTOMATIC_MODE,
+  AUTOMATIC_MODE_RACE,
+  activateScenarioForTask,
   fetchTasks,
   setTaskMode,
 } from './action_creators';
-import { activateAgent, receiveListAgents } from '../agents/action_creators';
-import { getInitialState } from './reducer';
+import {
+  activateAgent,
+  receiveListAgents,
+} from '../agents/action_creators';
+import {
+  getInitialState,
+  setTaskMode as reducerSetTaskMode,
+} from './reducer';
 import * as dao from './dao';
+import * as taskService from './task_service';
+import * as socketService from './socket_service';
 
 describe('Tasks action creators', () => {
+  let startServiceStub;
+  let startSocketServiceStub;
+
+  beforeEach(() => {
+    startServiceStub = sinon.stub(taskService, 'startService');
+    startSocketServiceStub = sinon.stub(socketService, 'startSocketService');
+  });
+
+  afterEach(() => {
+    startServiceStub.restore();
+    startSocketServiceStub.restore();
+  });
+
   describe('setTaskMode', () => {
+    const dispatchSpy = sinon.spy();
+
+    afterEach(() => {
+      dispatchSpy.reset();
+    });
+
     it('dispatch correct action', (done) => {
-      const dispatchSpy = sinon.spy();
       const promise = setTaskMode('automatic')(dispatchSpy);
       Promise.resolve(promise)
         .then(() => {
@@ -35,6 +64,76 @@ describe('Tasks action creators', () => {
         .catch((err) => {
           done(err);
         });
+    });
+
+    it('should call startService when in AUTOMATIC_MODE', (done) => {
+      let promise = setTaskMode(AUTOMATIC_MODE)(dispatchSpy);
+      Promise.resolve(promise)
+        .then(() => {
+          expect(startServiceStub.calledOnce).to.be.true;
+
+          promise = setTaskMode(AUTOMATIC_MODE_RACE)(dispatchSpy);
+          Promise.resolve(promise)
+            .then(() => {
+              //  check startService hasn't been called
+              expect(startServiceStub.calledOnce).to.be.true;
+              done();
+            })
+            .catch((err) => {
+              done(err);
+            });
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+
+    it('should call startSocketService when in AUTOMATIC_MODE_RACE', (done) => {
+      let promise = setTaskMode(AUTOMATIC_MODE)(dispatchSpy);
+      Promise.resolve(promise)
+        .then(() => {
+          expect(startSocketServiceStub.calledOnce).to.be.false;
+
+          promise = setTaskMode(AUTOMATIC_MODE_RACE)(dispatchSpy);
+          Promise.resolve(promise)
+            .then(() => {
+              //  check startService hasn't been called
+              expect(startSocketServiceStub.calledOnce).to.be.true;
+              done();
+            })
+            .catch((err) => {
+              done(err);
+            });
+        })
+        .catch((err) => {
+          done(err);
+        });
+    });
+  });
+
+  describe('activateScenarioForTask', () => {
+    const dispatchSpy = sinon.spy();
+
+    it('should not call startService if not in AUTOMATIC_MODE', () => {
+      let tasks = getInitialState();
+      activateScenarioForTask(tasks, dispatchSpy);
+      expect(startServiceStub.calledOnce).to.be.false;
+
+      tasks = reducerSetTaskMode(tasks, AUTOMATIC_MODE);
+      activateScenarioForTask(tasks, dispatchSpy);
+      expect(startServiceStub.calledOnce).to.be.true;
+
+      tasks = reducerSetTaskMode(tasks, AUTOMATIC_MODE_RACE);
+      activateScenarioForTask(tasks, dispatchSpy);
+      expect(startServiceStub.calledOnce).to.be.true;
+
+      tasks = reducerSetTaskMode(tasks, MANUAL_MODE);
+      activateScenarioForTask(tasks, dispatchSpy);
+      expect(startServiceStub.calledOnce).to.be.true;
+
+      tasks = reducerSetTaskMode(tasks, AUTOMATIC_MODE);
+      activateScenarioForTask(tasks, dispatchSpy);
+      expect(startServiceStub.calledTwice).to.be.true;
     });
   });
 
@@ -76,8 +175,9 @@ describe('Tasks action creators', () => {
         expect(apiStub.firstCall.args).to.deep.equal([1, 'a', 2]);
 
         expect(dispatchSpy.args[0]).to.deep.equal([{ type: REQUEST_TASKS }]);
-        expect(dispatchSpy.args[1]).to.deep.equal([{ type: RECEIVE_TASKS,
-          response: resp }]);
+
+        // expect(dispatchSpy.args[1]).to.deep.equal([{ type: RECEIVE_TASKS,
+        //   response: resp }]);
 
         done();
       })
@@ -100,10 +200,8 @@ describe('Tasks action creators', () => {
 
       const promise = fetchTasks()(store.dispatch, store.getState);
 
-      console.log('calling promise');
       Promise.resolve(promise)
         .then(() => {
-          console.log('promise then');
           let tasks = store.getState().tasks;
           expect(tasks.get('tasks').size).to.equal(3);
           expect(tasks.getIn(['tasks', 0, 'active'])).to.be.true;
@@ -111,18 +209,15 @@ describe('Tasks action creators', () => {
 
           //  should set extension to engaged
           expect(tasks.get('isEngaged')).to.be.true;
-          console.log('promise then 2');
 
           //  change task dao
           setTimeout(() => {
-            console.log('setTimeout!!! store.getState().tasks');
             tasks = store.getState().tasks;
 
             //  should set task to queued
             expect(tasks.getIn(['tasks', 0, 'status'])).to.equal(2);
             done();
           }, 250);
-          console.log('promise then 2');
         })
         .catch((err) => {
           done(err);

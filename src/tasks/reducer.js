@@ -55,7 +55,6 @@ export function setEngagement(state, isEngaged) {
 }
 
 export function setNextTaskActive(state) {
-  console.log('setNextTaskActive');
   let newTasks = state.get('tasks');
 
   let activeIndex = newTasks.findIndex((t) => t.get('active', false));

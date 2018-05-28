@@ -85,6 +85,7 @@ module.exports = {
 
     new webpack.DefinePlugin({
       API_URL: JSON.stringify('http://127.0.0.1:8000/'),
+      SOCKET_URL: JSON.stringify('ws://127.0.0.1:8000/'),
       SNAP_INTERVAL: 1000,
 
       // API_URL: JSON.stringify('https://browser-snapshots.herokuapp.com/'),

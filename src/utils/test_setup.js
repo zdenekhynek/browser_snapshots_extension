@@ -12,6 +12,10 @@ global.chrome = {
     executeScript: () => {},
     update: () => {},
     query: () => {},
+    onUpdated: {
+      addListener: () => {},
+      removeListener: () => {},
+    },
   },
 
   //  mock react-chrome-redux
@@ -41,9 +45,12 @@ global.chrome = {
 };
 
 global.API_URL = '';
+global.SOCKET_URL = '';
 
 const jsonFetch = () => Promise.resolve({});
 global.fetch = () => Promise.resolve({ json: jsonFetch });
+
+global.WebSocket = () => {};
 
 export function createTestStore() {
   const finalCreateStore = compose(
