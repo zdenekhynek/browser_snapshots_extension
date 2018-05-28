@@ -53,24 +53,6 @@ export function onMessageCallback(socketData) {
 
     //  format received socket data so they are similar to tasks
     //  received from the REST API
-
-    // {
-    //   "keyword": "fox news",
-    //   "id": 135,
-    //   "tasks": [
-    //     {"id": 269, "status": 1, "type": 1, "agent": 1, "session": null,
-    //       "scenario": {"id": 268, "type": 1,
-    //       "config": [
-    //         {"settings": {"keyword": "fox news"}}
-    //       ]}
-    //     }
-    //   ],
-    //   "message": "race_started",
-    //   "type": "chat_message"
-    // }
-
-
-    //  TODO - check that logged-in agent is on the list socketData.agents
     const response = socketData.tasks;
     dispatch(receivedTasks(response));
   }

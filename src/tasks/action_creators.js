@@ -130,7 +130,16 @@ export function receiveTasks(response) {
 
 export function receivedTasks(response) {
   return (dispatch, getState) => {
-    dispatch(receiveTasks(response || {}));
+    //  filter to make sure we're working with tasks relevant to
+    //  the active agent
+    const { agents } = getState();
+    const activeAgent = agents.find(
+      (a) => a.get('active', false), null, Map()
+    ).get('id');
+
+    const filteredResponse = response.filter((r) => r.agent === activeAgent);
+
+    dispatch(receiveTasks(filteredResponse || {}));
 
     let tasks = getState().tasks;
     if (response.length > 0 && !tasks.get('isEngaged')) {
