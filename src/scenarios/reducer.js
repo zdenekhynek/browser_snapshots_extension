@@ -137,36 +137,42 @@ export const AUTOMATIC_SCENARIOS = [
     id: 1,
     name: 'Automatic Search on YouTube',
     controls: ['searchInput'],
-    steps: [{
+    steps: [/* {
       id: 1,
       name: 'Go on YouTube',
       duration: 2000,
       script: GO_ON_YOUTUBE_SCRIPT,
-    }, {
-      id: 2,
-      name: 'Search YouTube',
-      duration: 3000,
-      script: SEARCH_YOUTUBE,
-      args: [],
-    }, {
-      id: 3,
-      name: 'Click first result',
-      duration: 3000,
-      script: CLICK_SEARCH_RESULT,
-      args: [0],
-    }, {
-      id: 4,
-      name: 'Watch next up video',
-      repeat: 10,
-      duration: 30000,
-      script: NEXT_VIDEO_SCRIPT,
-    },
-    {
-      id: 5,
-      name: 'Stop video',
-      duration: 2000,
-      script: STOP_VIDEO_SCRIPT,
-    }],
+    },*/ {
+        id: 2,
+        name: 'Search YouTube',
+        duration: 3000,
+        script: SEARCH_YOUTUBE,
+        args: [],
+      }, {
+        id: 3,
+        name: 'Click first result',
+        duration: 3000,
+        script: CLICK_SEARCH_RESULT,
+        args: [0],
+      }, {
+        id: 4,
+        name: 'Watch next up video',
+        //  repeat: 20,
+        repeat: 2,
+        duration: 30000,
+        script: NEXT_VIDEO_SCRIPT,
+      },
+      {
+        id: 5,
+        name: 'Stop video',
+        duration: 2000,
+        script: STOP_VIDEO_SCRIPT,
+      }, {
+        id: 6,
+        name: 'Go on YouTube',
+        duration: 2000,
+        script: GO_ON_YOUTUBE_SCRIPT,
+      }],
   },
   {
     id: 2,
@@ -192,7 +198,7 @@ export const AUTOMATIC_SCENARIOS = [
     }, {
       id: 4,
       name: 'Watch next up video',
-      repeat: 10,
+      repeat: 20,
       duration: 5000,
       script: NEXT_VIDEO_SCRIPT,
     },
@@ -201,6 +207,11 @@ export const AUTOMATIC_SCENARIOS = [
       name: 'Stop video',
       duration: 2000,
       script: STOP_VIDEO_SCRIPT,
+    }, {
+      id: 6,
+      name: 'Go on YouTube',
+      duration: 2000,
+      script: GO_ON_YOUTUBE_SCRIPT,
     }],
   },
 ];

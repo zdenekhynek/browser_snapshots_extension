@@ -93,6 +93,7 @@ export function startScenario(sessionId) {
     const steps = scenario.get('steps');
 
     const finishSteps = () => {
+      console.log('finishSteps');
       dispatch(stopSession(sessionId));
 
       //  complete existing task

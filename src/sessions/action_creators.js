@@ -17,7 +17,14 @@ export const CLEAR_SESSIONS = 'CLEAR_SESSIONS';
 export const INACTIVE_ICON = 'icon-camera-20.png';
 export const ACTIVE_ICON = 'icon-camera-20-active.png';
 
+//  after page loads, wait for a bit before taking screenshot
+//  to allow for the page the fully load
+export const SNAPSHOT_DELAY = 600;
+
 let snapshotInterval;
+let snapshotTimeout;
+let activeSnapshots = false;
+let snapshotObject = {};
 
 export function makeSnapshot(dispatch, sessionId, agentId, recordedTabId) {
   let currentTab;
@@ -42,15 +49,20 @@ export function makeSnapshot(dispatch, sessionId, agentId, recordedTabId) {
 
 export function startInterval(dispatch, sessionId, agentId, recordedTabId,
   interval = 1000) {
-  snapshotInterval = setInterval(() => {
-    makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
-  }, interval);
+  activeSnapshots = true;
+  snapshotObject = { dispatch, sessionId, agentId, recordedTabId };
 
-  makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
+  // snapshotInterval = setInterval(() => {
+  //   makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
+  // }, interval);
+
+  // makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
 }
 
 export function stopInterval() {
-  clearInterval(snapshotInterval);
+  activeSnapshots = false;
+
+  //  clearInterval(snapshotInterval);
 }
 
 
@@ -73,6 +85,19 @@ export function clearSessions() {
   };
 }
 
+export function onLoadComplete(tabId, changeInfo) {
+  if (changeInfo.status === 'complete') {
+    if (activeSnapshots) {
+      clearTimeout(snapshotTimeout);
+
+      snapshotTimeout = setTimeout(() => {
+        const { dispatch, sessionId, agentId, recordedTabId } = snapshotObject;
+        makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
+      }, SNAPSHOT_DELAY);
+    }
+  }
+}
+
 export function startSession() {
   return (dispatch, getState) => {
     const { auth, agents } = getState();
@@ -82,6 +107,11 @@ export function startSession() {
 
     //  update extension icon
     chrome.browserAction.setIcon({ path: ACTIVE_ICON });
+
+    //  make sure we have callback
+    //  TODO - do we need to do this?
+    chrome.tabs.onUpdated.removeListener(onLoadComplete);
+    chrome.tabs.onUpdated.addListener(onLoadComplete);
 
     getActiveTabId().then((activeTabId) => {
       //  SCENARIO - add scenario id

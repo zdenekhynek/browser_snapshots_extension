@@ -9964,13 +9964,14 @@ module.exports = isObject;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.RECEIVE_STOP_SESSION = exports.REQUEST_STOP_SESSION = exports.ACTIVE_ICON = exports.INACTIVE_ICON = exports.CLEAR_SESSIONS = exports.RECEIVE_START_SESSION = exports.REQUEST_START_SESSION = undefined;
+exports.RECEIVE_STOP_SESSION = exports.REQUEST_STOP_SESSION = exports.SNAPSHOT_DELAY = exports.ACTIVE_ICON = exports.INACTIVE_ICON = exports.CLEAR_SESSIONS = exports.RECEIVE_START_SESSION = exports.REQUEST_START_SESSION = undefined;
 exports.makeSnapshot = makeSnapshot;
 exports.startInterval = startInterval;
 exports.stopInterval = stopInterval;
 exports.requestStartSession = requestStartSession;
 exports.receiveStartSession = receiveStartSession;
 exports.clearSessions = clearSessions;
+exports.onLoadComplete = onLoadComplete;
 exports.startSession = startSession;
 exports.requestStopSession = requestStopSession;
 exports.receiveStopSession = receiveStopSession;
@@ -9998,7 +9999,14 @@ var CLEAR_SESSIONS = exports.CLEAR_SESSIONS = 'CLEAR_SESSIONS';
 var INACTIVE_ICON = exports.INACTIVE_ICON = 'icon-camera-20.png';
 var ACTIVE_ICON = exports.ACTIVE_ICON = 'icon-camera-20-active.png';
 
+//  after page loads, wait for a bit before taking screenshot
+//  to allow for the page the fully load
+var SNAPSHOT_DELAY = exports.SNAPSHOT_DELAY = 600;
+
 var snapshotInterval = void 0;
+var snapshotTimeout = void 0;
+var activeSnapshots = false;
+var snapshotObject = {};
 
 function makeSnapshot(dispatch, sessionId, agentId, recordedTabId) {
   var currentTab = void 0;
@@ -10026,15 +10034,20 @@ function makeSnapshot(dispatch, sessionId, agentId, recordedTabId) {
 function startInterval(dispatch, sessionId, agentId, recordedTabId) {
   var interval = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1000;
 
-  snapshotInterval = setInterval(function () {
-    makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
-  }, interval);
+  activeSnapshots = true;
+  snapshotObject = { dispatch: dispatch, sessionId: sessionId, agentId: agentId, recordedTabId: recordedTabId };
 
-  makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
+  // snapshotInterval = setInterval(() => {
+  //   makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
+  // }, interval);
+
+  // makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
 }
 
 function stopInterval() {
-  clearInterval(snapshotInterval);
+  activeSnapshots = false;
+
+  //  clearInterval(snapshotInterval);
 }
 
 function requestStartSession() {
@@ -10056,6 +10069,24 @@ function clearSessions() {
   };
 }
 
+function onLoadComplete(tabId, changeInfo) {
+  if (changeInfo.status === 'complete') {
+    if (activeSnapshots) {
+      clearTimeout(snapshotTimeout);
+
+      snapshotTimeout = setTimeout(function () {
+        var _snapshotObject = snapshotObject,
+            dispatch = _snapshotObject.dispatch,
+            sessionId = _snapshotObject.sessionId,
+            agentId = _snapshotObject.agentId,
+            recordedTabId = _snapshotObject.recordedTabId;
+
+        makeSnapshot(dispatch, sessionId, agentId, recordedTabId);
+      }, SNAPSHOT_DELAY);
+    }
+  }
+}
+
 function startSession() {
   return function (dispatch, getState) {
     var _getState = getState(),
@@ -10070,6 +10101,11 @@ function startSession() {
     //  update extension icon
     chrome.browserAction.setIcon({ path: ACTIVE_ICON });
 
+    //  make sure we have callback
+    //  TODO - do we need to do this?
+    chrome.tabs.onUpdated.removeListener(onLoadComplete);
+    chrome.tabs.onUpdated.addListener(onLoadComplete);
+
     (0, _extension_utils.getActiveTabId)().then(function (activeTabId) {
       //  SCENARIO - add scenario id
       dispatch(requestStartSession());
@@ -10082,7 +10118,7 @@ function startSession() {
         dispatch((0, _aliases.startScenarioAlias)(response.id));
       }).catch(function (error) {
         console.error(error); //  eslint-disable-line no-console
-        dispatch((0, _action_creators.raiseError)('Failed starting session'));
+        dispatch((0, _action_creators.raiseError)('Failed starting session:' + error));
         return Promise.reject({ error: error });
       });
     }).catch();
@@ -10207,8 +10243,6 @@ function changeTaskStatus(status) {
 }
 
 function activateScenarioForTask(tasks, dispatch) {
-  console.log('activateScenarioForTask', tasks);
-
   //  TODO - what is extension was switched to the manual mode
   //  in the meantime
   if (tasks.get('isEngaged')) {
@@ -10218,7 +10252,7 @@ function activateScenarioForTask(tasks, dispatch) {
     var activeTask = (0, _utils2.getActiveTask)(tasks);
 
     if (activeTask) {
-      dispatch((0, _action_creators2.activeScenarioFromTask)(activeTask));
+      dispatch((0, _action_creators2.activateScenarioFromTask)(activeTask));
 
       // mark task as in progress
       dispatch(changeTaskStatus(2));
@@ -10237,18 +10271,23 @@ var AUTOMATIC_MODE = exports.AUTOMATIC_MODE = 'AUTOMATIC_MODE';
 var AUTOMATIC_MODE_RACE = exports.AUTOMATIC_MODE_RACE = 'AUTOMATIC_MODE_RACE';
 var MANUAL_MODE = exports.MANUAL_MODE = 'MANUAL_MODE';
 
+//  for tests shouldStartService flag
 function setTaskMode(mode) {
-  return function (dispatch) {
-    if (mode === AUTOMATIC_MODE || mode === AUTOMATIC_MODE_RACE) {
-      (0, _task_service.startService)(dispatch);
-    } else {
-      (0, _task_service.stopService)();
-    }
+  var shouldStartService = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
+  return function (dispatch) {
     dispatch({
       type: SET_TASK_MODE,
       mode: mode
     });
+
+    if (shouldStartService) {
+      if (mode === AUTOMATIC_MODE || mode === AUTOMATIC_MODE_RACE) {
+        (0, _task_service.startService)(dispatch);
+      } else {
+        (0, _task_service.stopService)();
+      }
+    }
   };
 }
 
@@ -10301,17 +10340,16 @@ function fetchTasks() {
       dispatch(receiveTasks(response || {}));
 
       var tasks = getState().tasks;
-      console.log('tasks', tasks, response);
       if (response.length > 0 && !tasks.get('isEngaged')) {
         //  we have some new tasks and the extensions is not doing anything
         //  active first task
         dispatch(setNextTaskActive());
+
+        tasks = getState().tasks;
+
+        //  do we need to update scenario
+        activateScenarioForTask(tasks, dispatch);
       }
-
-      tasks = getState().tasks;
-
-      //  do we need to update scenario
-      activateScenarioForTask(tasks, dispatch);
     }).catch(function (error) {
       console.error('Failed getting tasks'); //  eslint-disable-line no-console, max-len
       console.error(error); //  eslint-disable-line no-console
@@ -10325,8 +10363,6 @@ var SET_TASK_SESSION = exports.SET_TASK_SESSION = 'SET_TASK_SESSION';
 
 function setTaskSession(sessionId) {
   return function (dispatch, getState) {
-    console.log('setTaskSession');
-
     var _getState3 = getState(),
         auth = _getState3.auth,
         tasks = _getState3.tasks;
@@ -10334,14 +10370,10 @@ function setTaskSession(sessionId) {
     var token = auth.get('token');
 
     var activeTask = (0, _utils2.getActiveTask)(tasks);
-    console.log('activeTask');
-    console.log(activeTask);
 
     if (activeTask) {
-      console.log('fetch task session', token);
       var id = activeTask.get('id');
       dao.changeSessionId(id, sessionId, token).then(function () {
-        console.log('dispatch task session', sessionId);
         dispatch({ type: SET_TASK_SESSION, sessionId: sessionId });
       }).catch(function (error) {
         console.error('Failed changing task session id'); //  eslint-disable-line no-console, max-len
@@ -10513,35 +10545,35 @@ function createSnapshot(session, agent, title, url, sourceCode, image) {
         auth = _getState.auth,
         snapshots = _getState.snapshots;
 
-    console.log('agent', session, agent, title, url);
-
     //  do we have a valid screenshot
+
+
     var validSnapshot = validateSnapshot(session, agent, title, url);
 
     if (!validSnapshot) {
       //  not a valid snapshot, dispatch a empty action;
-      console.log('Not a valid snapshot!!');
       dispatch({ type: '' });
       return;
     }
 
-    console.log('Valid snapshot!!');
-
     //  do not do anything if last snapshot had the same url and title
     var lastSnapshot = snapshots.last();
 
-    if (lastSnapshot) {
-      console.log('lastSnapshot', lastSnapshot.toJS());
-    }
+    console.log('lastSnapshot', lastSnapshot, session, agent, title, url);
 
     if (lastSnapshot) {
-      if (lastSnapshot.get('session') === session && lastSnapshot.get('agent') === agent && lastSnapshot.get('title') === title && lastSnapshot.get('url') === url) {
-        console.log('Do not track, same page'); // eslint-disable-line no-console, max-len
-        return;
-      }
+      if (lastSnapshot.get('session') === session && lastSnapshot.get('agent') === agent && lastSnapshot.get('title') === title
+
+      // Sometimes the browser url is updated without reloading the page
+      // so disable tracking of the url for now
+      // lastSnapshot.get('url') === url
+      ) {
+          console.log('Do not track, same page'); // eslint-disable-line no-console, max-len
+          return;
+        }
     }
 
-    console.log('Track, new page'); // eslint-disable-line no-console
+    console.log('creating new snapshot');
 
     dispatch(requestCreateSnapshot());
     dao.createSnapshot(session, agent, title, url, sourceCode, image, auth.get('token')).then(function (response) {
@@ -10570,6 +10602,8 @@ exports.getBodyHtmlFn = getBodyHtmlFn;
 exports.getCurrentTabSnapshot = getCurrentTabSnapshot;
 exports.getSnapshot = getSnapshot;
 exports.getActiveTabId = getActiveTabId;
+exports.getWindowId = getWindowId;
+exports.switchToWindow = switchToWindow;
 exports.switchToTab = switchToTab;
 exports.clearCache = clearCache;
 exports.navigateToUrl = navigateToUrl;
@@ -10641,6 +10675,18 @@ function getActiveTabId() {
   });
 }
 
+function getWindowId() {
+  return new Promise(function (resolve) {
+    chrome.windows.getCurrent(function (w) {
+      resolve(w.id);
+    });
+  });
+}
+
+function switchToWindow(windowId) {
+  chrome.windows.update(windowId, { focused: true });
+}
+
 function switchToTab(tabId) {
   chrome.tabs.update(tabId, { active: true });
 }
@@ -10673,8 +10719,13 @@ function navigateToUrl(url) {
 //  search for video
 
 function executeScript(script) {
-  chrome.tabs.executeScript({
-    code: script
+  //  make sure the window is focused to run script on it
+  getWindowId().then(function (windowId) {
+    return switchToWindow(windowId);
+  }).then(function () {
+    chrome.tabs.executeScript({
+      code: script
+    });
   });
 }
 
@@ -10985,7 +11036,6 @@ function setTaskModeAlias(taskMode) {
 }
 
 function setTaskModeAliasValue(action) {
-  console.log('setTaskModeAliasValue', action);
   return (0, _action_creators6.setTaskMode)(action.taskMode);
 }
 
@@ -11098,7 +11148,7 @@ exports.startScenario = startScenario;
 exports.stopScenario = stopScenario;
 exports.changeScenario = changeScenario;
 exports.changeScenarioParam = changeScenarioParam;
-exports.activeScenarioFromTask = activeScenarioFromTask;
+exports.activateScenarioFromTask = activateScenarioFromTask;
 
 var _immutable = __webpack_require__(2);
 
@@ -11223,8 +11273,6 @@ function startScenario(sessionId) {
 
     executeSteps(steps, finishSteps);
 
-    console.log('getState().tasks.get("isEngaged")');
-    console.log(getState().tasks.get('isEngaged'));
     if (getState().tasks.get('isEngaged')) {
       dispatch((0, _action_creators.setTaskSession)(sessionId));
     }
@@ -11257,12 +11305,10 @@ function changeScenarioParam(scenarioId, param, value) {
   };
 }
 
-function activeScenarioFromTask() {
+function activateScenarioFromTask() {
   var task = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : (0, _immutable.Map)();
 
   return function (dispatch) {
-    console.log('activeScenarioFromTask task', task);
-
     //  pick scenario id: 1 for race, and scenario id: 2 for training
     var scenarioId = task.get('type') === 1 ? 2 : 1;
 
@@ -11272,10 +11318,6 @@ function activeScenarioFromTask() {
 
     //  change scenario with params
     var params = { step: step, param: param, value: value };
-
-    console.log('scenarioId', scenarioId);
-    console.log('value', value);
-    console.log('params', params);
 
     dispatch(changeScenario(scenarioId, params));
 
@@ -15752,6 +15794,8 @@ function startService(dispatchRef) {
   stopService();
 
   serviceInterval = setInterval(checkTasks, CHECK_INTERVAL);
+
+  //  check for tasks immediatelly
   checkTasks();
 }
 
@@ -47097,7 +47141,6 @@ function mapStateToProps(_ref) {
       errors = _ref.errors;
   // ownProps
   var isAuthorized = !!auth.isAuthorized;
-  console.log('errors', errors);
   return { isAuthorized: isAuthorized, errors: errors, agents: agents };
 }
 
@@ -47883,7 +47926,6 @@ var LoginPanel = function (_React$Component) {
   }, {
     key: 'onSearchInputChange',
     value: function onSearchInputChange(evt) {
-      console.log('onSearchInputChange', evt);
       this.props.onScenarioParamChange('searchInput', +evt.target.value);
     }
   }, {

@@ -52,17 +52,25 @@ export function createSnapshot(session, agent, title, url, sourceCode, image) {
 
     //  do not do anything if last snapshot had the same url and title
     const lastSnapshot = snapshots.last();
+
+    console.log('lastSnapshot', lastSnapshot, session, agent, title, url);
+
     if (lastSnapshot) {
       if (
         lastSnapshot.get('session') === session &&
         lastSnapshot.get('agent') === agent &&
-        lastSnapshot.get('title') === title &&
-        lastSnapshot.get('url') === url
+        lastSnapshot.get('title') === title
+
+        // Sometimes the browser url is updated without reloading the page
+        // so disable tracking of the url for now
+        // lastSnapshot.get('url') === url
       ) {
         console.log('Do not track, same page'); // eslint-disable-line no-console, max-len
         return;
       }
     }
+
+    console.log('creating new snapshot');
 
     dispatch(requestCreateSnapshot());
     dao.createSnapshot(session, agent, title, url, sourceCode, image,

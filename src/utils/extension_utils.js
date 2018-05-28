@@ -63,6 +63,18 @@ export function getActiveTabId() {
   });
 }
 
+export function getWindowId() {
+  return new Promise((resolve) => {
+    chrome.windows.getCurrent((w) => {
+      resolve(w.id);
+    });
+  });
+}
+
+export function switchToWindow(windowId) {
+  chrome.windows.update(windowId, { focused: true });
+}
+
 export function switchToTab(tabId) {
   chrome.tabs.update(tabId, { active: true });
 }
@@ -98,7 +110,14 @@ export function navigateToUrl(url) {
 //  search for video
 
 export function executeScript(script) {
-  chrome.tabs.executeScript({
-    code: script,
-  });
+  //  make sure the window is focused to run script on it
+  getWindowId()
+    .then((windowId) => {
+      return switchToWindow(windowId);
+    })
+    .then(() => {
+      chrome.tabs.executeScript({
+        code: script,
+      });
+    });
 }
